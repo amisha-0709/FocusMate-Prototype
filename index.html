@@ -478,6 +478,18 @@ nav.bn.tab-changed .dock button[aria-current="page"] svg{animation:tabPop .45s c
 .pk-donecard{display:flex;align-items:center;gap:10px;padding:10px 12px 10px 14px;border-radius:16px;background:rgba(var(--i),.035);color:var(--muted);font-size:13.5px;font-weight:600;flex-shrink:0}
 .pk-donecard .grow{text-decoration:line-through;text-decoration-color:rgba(var(--i),.3)}
 .pk-tick{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(111,214,168,.18);color:var(--mint)}
+.tg{display:flex;flex-direction:column;gap:12px;animation:rise .45s cubic-bezier(.2,.8,.2,1) both}
+.tg-head{display:flex;align-items:center;gap:10px}
+.tg-orb{width:34px;height:34px;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 35% 30%,#E3E7FF,#A9B4FF 55%,#6E7BF2);box-shadow:0 0 14px rgba(140,155,255,.5);animation:orbPulse 4s ease-in-out infinite}
+.tg-name{font-size:14px}
+.tg-sub{font-size:11.5px;font-weight:600;color:var(--muted)}
+.tg-msg{margin:0;padding:12px 14px;border-radius:4px 18px 18px 18px;background:rgba(140,155,255,.12);font-size:15px;line-height:1.45;color:var(--fg)}
+.tg-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.tg-opt{display:flex;align-items:center;gap:8px;min-height:46px;padding:0 12px;border-radius:14px;border:1px solid var(--surface-edge);background:rgba(var(--i),.04);color:var(--fg);font:inherit;font-weight:700;font-size:13px;text-align:left}
+.tg-opt svg{flex-shrink:0;color:var(--peri)}
+.tg-hint{font-size:12px;color:var(--faint);text-align:center}
+.chat-card:has(#chat > *) .tg-opts,.chat-card:has(#chat > *) .tg-hint{display:none}
+@media (prefers-reduced-motion: reduce){.tg,.tg-orb{animation:none}}
 .card.fstrip{flex-direction:row;justify-content:space-between;align-items:stretch;gap:0;padding:12px 6px}
 .fs-item{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
 .fs-item+.fs-item{border-left:1px solid rgba(var(--i),.07)}
@@ -830,7 +842,7 @@ async function ai(input, opts = {}) {
   catch (e) { if (e && PERMANENT.includes(e.code)) { aiOff = true; toast(ERR.not_granted); } throw e; }
 }
 const tutorRules = (sub, topic) => `You are FocusMate's AI tutor in a focused study session. Topic: "${topic.name}" (subject: ${sub.name}).
-Rules: teach from the student's notes first; if you add anything not in the notes, end that sentence with "(outside your notes)". Be warm, clear and short (at most 120 words unless asked). Plain text only, no markdown headings or asterisks. Never invent the student's scores.
+Rules: teach from the student's notes first; if you add anything not in the notes, end that sentence with "(outside your notes)". Talk like a friendly personal tutor in a chat: warm, clear and short (about 60–80 words unless the student asks for more), one idea at a time, and end with one short question to keep them thinking. Plain text only, no markdown headings or asterisks. Never invent the student's scores.
 STUDENT'S NOTES:
 """
 ${notesFor(sub, topic.name, 6000)}
@@ -1382,7 +1394,7 @@ SCREENS.focus = () => {
   <button class="end-btn" data-act="askEnd">${sv('<rect x="6" y="6" width="12" height="12" rx="2.5"/>', 16)}End session</button><p class="small" style="margin:-8px 0 0;text-align:center">Your progress is saved. You can resume any time.</p>`,
   after: () => {
     paintSteps(); drawClock(); if (R.running) { clearInterval(UI.tick); UI.tick = setInterval(drawClock, 250); }
-    if (R.step === 'learn') { if (R.lessonText) { renderRich($('lessonOut'), R.lessonText); addAiTools($('lessonOut'), R.lessonText); } else $('lessonOut').innerHTML = tutorStartCard(t); (R.chat || []).forEach((m) => { const b = mkBubble(m.role === 'user' ? 'me' : 'ai', m.role === 'user' ? m.content : '', (m.files || []).map((n) => ({ name: n, kind: 'file' }))); if (m.role !== 'user') { renderRich(b, m.content); addAiTools(b, m.content); } $('chat').appendChild(b); }); }
+    if (R.step === 'learn') { if (R.lessonText) { renderRich($('lessonOut'), R.lessonText); addAiTools($('lessonOut'), R.lessonText); } else $('lessonOut').innerHTML = (R.greeted || (R.chat || []).length) ? tutorGreeting(sub, t) : tutorStartCard(t); (R.chat || []).forEach((m) => { const b = mkBubble(m.role === 'user' ? 'me' : 'ai', m.role === 'user' ? m.content : '', (m.files || []).map((n) => ({ name: n, kind: 'file' }))); if (m.role !== 'user') { renderRich(b, m.content); addAiTools(b, m.content); } $('chat').appendChild(b); }); }
     else { $('learnPanel').hidden = true; $('toPracticeBtn').hidden = true; $('quizPanel').hidden = false; if (R.quiz) renderQuestion(); else loadQuiz(); }
     $('askForm').addEventListener('submit', (e) => {
       e.preventDefault(); const q = $('askInput').value.trim(); const atts = (UI.attach || []).filter((a) => a.state === 'ready');
@@ -1716,7 +1728,8 @@ async function teach(kind, q, atts = []) {
   if ($('tutorActions')) $('tutorActions').hidden = false;
   const target = kind === 'lesson' ? $('lessonOut') : addBubble('ai', '');
   if (kind === 'ask' && !q) q = atts.length === 1 ? `Explain what's in "${atts[0].name}" and how it relates to ${t.name}.` : `Explain what's in these files and how they relate to ${t.name}.`;
-  if (kind === 'ask') target.before(mkBubble('me', q, atts));
+  const shown = UI.displayQ || q; UI.displayQ = null;
+  if (kind === 'ask') target.before(mkBubble('me', shown, atts));
   const images = atts.flatMap((a) => a.blobs || []);
   let fileText = '';
   for (const a of atts) {
@@ -1739,7 +1752,7 @@ async function teach(kind, q, atts = []) {
     // Keep later calls small: remember the file by name and a short excerpt, not its whole text.
     if (atts.length) R.turns[R.turns.length - 1] = { role: 'user', content: q + atts.map((a) => `\n[Attached: ${a.name}${a.text ? ' — excerpt: ' + a.text.slice(0, 1200) : ''}]`).join('') };
     R.turns.push({ role: 'assistant', content: text });
-    if (kind === 'lesson') { R.lessonText = text; R.learned = true; } else { R.chat = R.chat || []; if (kind === 'ask') R.chat.push({ role: 'user', content: q, files: atts.map((a) => a.name) }); R.chat.push({ role: 'ai', content: text }); }
+    if (kind === 'lesson') { R.lessonText = text; R.learned = true; } else { R.chat = R.chat || []; if (kind === 'ask') R.chat.push({ role: 'user', content: shown, files: atts.map((a) => a.name) }); R.chat.push({ role: 'ai', content: text }); }
   } catch (e) {
     R.turns.pop();
     if (e && e.code === 'cancelled') {
@@ -1750,12 +1763,32 @@ async function teach(kind, q, atts = []) {
     }
     const fb = LESSON[t.name];
     if (kind === 'lesson') { R.lessonText = fb ? fb + '\n\n(Built-in sample lesson: AI is off in this view.)' : `Key points from your notes on ${t.name}:\n\n` + sub.notes.split(/\n+/).filter((l) => l.toLowerCase().includes(t.name.split(' ')[0].toLowerCase())).slice(0, 4).map((l) => '- ' + l.trim()).join('\n') + '\n\n(AI is off, so this is a summary of your notes.)'; renderRich(target, R.lessonText); addAiTools(target, R.lessonText); R.learned = true; if ($('toPracticeBtn')) $('toPracticeBtn').hidden = false; }
+    else if (e && e.code === 'unavailable' && kind === 'ask' && !atts.length) {
+      // No live AI here (e.g. the public demo link): answer from the built-in sample lesson so the Quest can continue.
+      const body = fb ? fb.split(/\n\n+/).slice(0, 2).join('\n\n') : `Here are the key ideas of ${t.name} from your notes. Read them, then try the practice questions.`;
+      const text = body + '\n\n(Sample answer: live AI replies work when this is opened on claude.ai.)';
+      renderRich(target, text); addAiTools(target, text); R.learned = true; if ($('toPracticeBtn')) $('toPracticeBtn').hidden = false;
+      R.chat = R.chat || []; R.chat.push({ role: 'user', content: shown, files: [] }); R.chat.push({ role: 'ai', content: text });
+    }
     else target.textContent = e && e.code === 'unavailable' ? 'The AI tutor needs Claude access. Open this prototype on claude.ai while signed in.' : e && e.code === 'images_unavailable' ? 'Reading images is not available in this view. Try a PDF with text, or type your question.' : e && e.code === 'image_rejected' ? "That image couldn't be read. Try a JPG or PNG under 20 MB." : errText(e);
   } finally { setBusy(false); stopRow.remove(); if (UI.tutorCtl === ctl) UI.tutorCtl = null; }
 }
 const stepIcon = (done) => `<span class="step-ico ${done ? 'done' : ''}">${done ? ICON.check : ''}</span>`;
+const GREET_OPTS = [
+  ['simple', 'Explain it simply', '<path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3zM9.5 20h5"/>', (t) => `Explain ${t} simply, in a few sentences.`],
+  ['example', 'Show me an example', '<rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 9h10M7 13h6"/>', (t) => `Give me one real-world example of ${t}.`],
+  ['quiz', 'Quiz me', '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5M12 17h.01"/>', (t) => `Ask me one quick question to check what I know about ${t}.`],
+  ['summary', 'Key points', '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>', (t) => `Give me the 3 key points of ${t}.`],
+];
+function tutorGreeting(sub, t) {
+  const name = esc((S.profile?.name || '').trim() || 'there');
+  return `<div class="tg"><div class="tg-head"><span class="tg-orb" aria-hidden="true"></span><span class="col" style="gap:1px"><b class="tg-name">FocusMate tutor</b><span class="tg-sub">${esc(sub.name)} · from your notes</span></span></div>
+    <p class="tg-msg">Hi ${name}! Ready to get <b>${esc(t.name)}</b> sorted? How can I help you today?</p>
+    <div class="tg-opts">${GREET_OPTS.map(([k, label, path]) => `<button class="tg-opt" data-act="greetOpt" data-k="${k}">${sv(path, 16)}<span>${label}</span></button>`).join('')}</div>
+    <span class="tg-hint">Or type your own question below.</span></div>`;
+}
 function tutorStartCard(t) {
-  return `<div class="tutor-start"><p class="sub" style="font-size:14px;line-height:1.5">I'll explain <b style="color:var(--fg)">${esc(t.name)}</b> from your notes in about a minute. Then ask me anything, or attach a PDF or photo.</p><button type="button" class="cta sm" data-act="startTutor" style="animation:none">${ICON.spark}<span class="t-full">Start AI tutor</span><span class="t-short">Get the full lesson</span></button></div>`;
+  return `<div class="tutor-start"><p class="sub" style="font-size:14px;line-height:1.5">Your personal tutor for <b style="color:var(--fg)">${esc(t.name)}</b>. Ask anything, get quick examples or a mini quiz, or attach a PDF or photo.</p><button type="button" class="cta sm" data-act="startTutor" style="animation:none">${ICON.spark}<span class="t-full">Start AI tutor</span><span class="t-short">Get the full lesson</span></button></div>`;
 }
 // Light formatting for tutor answers: **bold**, "- " bullets, paragraphs. Text is escaped first.
 function renderRich(el, text) {
@@ -2154,7 +2187,8 @@ const A = {
   park() { openPark(); },
   needHelp() { if (UI.run.step === 'learn') teach('ask', "I'm stuck. Explain the most important idea again in the simplest way, in 3 short steps."); else toast('Answer the question, then tap "Need Help: explain my mistake" if it goes wrong.'); },
   tutor(el) { teach(el.dataset.k); },
-  startTutor() { teach('lesson'); },
+  startTutor() { const R = UI.run; if (!R) return; R.greeted = true; const sub = S.subjects.find((x) => x.id === R.subjectId); const t = sub.topics.find((x) => x.id === R.topicId); $('lessonOut').innerHTML = tutorGreeting(sub, t); haptic(8); },
+  greetOpt(el) { const R = UI.run; if (!R || UI.busy) return; const sub = S.subjects.find((x) => x.id === R.subjectId); const t = sub.topics.find((x) => x.id === R.topicId); const o = GREET_OPTS.find((x) => x[0] === el.dataset.k); UI.displayQ = o[1]; teach('ask', o[3](t.name)); },
   toggleSubj(el) { const id = el.dataset.s; UI.openSubj = UI.openSubj || new Set(); if (UI.openSubj.has(id)) UI.openSubj.delete(id); else UI.openSubj.add(id); render({ still: true }); },
   mic(el) { toggleMic(el); },
   focusGames() { openGames(); },
