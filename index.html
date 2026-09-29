@@ -608,14 +608,21 @@ nav.bn.tab-changed .dock button[aria-current="page"] svg{animation:tabPop .45s c
 .cq.sel .cp{transform:scale(1.12) translateY(-2px)}
 .cq-r,.cq-f{position:absolute;font-size:9px;font-weight:800;font-style:normal;color:rgba(60,30,10,.55);pointer-events:none}
 .cq-r{top:2px;left:3px}.cq-f{bottom:1px;right:3px}
-.cg-status{display:flex;align-items:center;justify-content:center;gap:8px;min-height:36px;border-radius:12px;font-weight:800;font-size:14px;color:var(--soft);background:rgba(var(--i),.05)}
-.cg-status.chk{color:#fff;background:linear-gradient(160deg,#FF8A7A,#EE5A47);animation:pop .35s both}
-.cg-status.over{color:var(--amber);background:rgba(255,181,71,.14)}
-.cg-moves{display:flex;gap:6px;align-items:center;overflow-x:auto;white-space:nowrap;scrollbar-width:none;padding:2px 2px;font-size:13px;min-height:28px}
-.cg-moves::-webkit-scrollbar{display:none}
-.cg-moves .n{color:var(--faint);font-weight:700}
-.cg-moves .mv{font-weight:700;padding:3px 7px;border-radius:8px;background:rgba(var(--i),.05)}
-.cg-moves .mv.cur{background:rgba(255,181,71,.2);color:var(--amber)}
+.cg-card{display:flex;align-items:center;gap:10px;padding:8px 12px 8px 8px;border-radius:18px;border:1px solid transparent;transition:background-color .25s,border-color .25s}
+.cg-card b{font-size:14.5px;line-height:1.15}
+.cg-card.on{background:var(--surface);border-color:var(--surface-edge);box-shadow:var(--surface-shadow)}
+.cg-card .cg-caps{max-width:none;font-size:15px;letter-spacing:-2px;color:var(--muted);min-height:18px}
+.cg-chip{display:inline-flex;align-items:center;gap:4px;flex-shrink:0;padding:6px 11px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap;animation:pop .35s both}
+.cg-chip.you{background:linear-gradient(180deg,#FFC56B,#FF9F43);color:#5A2400;box-shadow:0 4px 12px rgba(255,159,67,.3)}
+.cg-chip.chk{background:linear-gradient(160deg,#FF8A7A,#EE5A47);color:#fff}
+.cg-chip.over{background:rgba(255,181,71,.16);color:var(--amber)}
+.cg-chip.think{background:rgba(140,155,255,.16);color:var(--peri)}
+.cg-chip.think i{width:5px;height:5px;border-radius:50%;background:currentColor;animation:dotPulse 1s ease-in-out infinite}
+.cg-chip.think i:nth-child(2){animation-delay:.15s}.cg-chip.think i:nth-child(3){animation-delay:.3s;margin-right:3px}
+@keyframes dotPulse{50%{opacity:.25;transform:translateY(-2px)}}
+.cg-msg{text-align:center;font-size:13px;font-weight:700;color:var(--muted);margin:-4px 0}
+.cg-sub{font-size:12px;font-weight:600;color:var(--muted)}
+.chess-ov{justify-content:safe center;gap:12px}
 .cg-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .cg-btn{display:flex;align-items:center;justify-content:center;gap:6px;min-height:46px;border-radius:14px;border:1px solid var(--surface-edge);background:var(--surface);box-shadow:var(--surface-shadow);color:var(--fg);font:inherit;font-weight:800;font-size:13px}
 .cg-btn:disabled{opacity:.45}
@@ -2187,7 +2194,7 @@ function openGames() {
   const cats = ['Quick brain', 'Puzzles', 'Longer break', 'Calm'];
   sheet(`<div class="gh" style="margin-bottom:-4px"><button class="gh-back" data-act="takeBreak" aria-label="Back to break options">${ICON.back}</button><span class="col grow" style="gap:0"><b class="gh-title">Focus <span class="serif">refresher</span></b><span class="gh-cat">Quest paused${UI.run ? ' at ' + fmt(leftMs()) : ''} · no points here</span></span></div>
     ${long ? `<div class="g-nudge">${sv('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/>', 16)}<span class="grow">You've refreshed for 5 minutes. Ready to get back?</span><button class="g-nudge-btn" data-act="resume">Back to Quest</button></div>` : ''}
-    ${cats.map((c) => `<span class="g-cat">${c}</span><div class="g-hub ${c === 'Calm' || c === 'Longer break' ? 'one' : ''}">${GAMES.filter((g) => g.cat === c).map((g) => `<button class="g-tile" data-act="playGame" data-g="${g.id}">${gIcon(g)}<span class="col" style="gap:1px;min-width:0"><b>${g.name}</b><span>${g.id === 'chessfull' && UI.cg && !UI.cg.over && UI.cg.hist.length ? 'Resume your game · move ' + (Math.floor(UI.cg.sans.length / 2) + 1) : g.meta}</span></span></button>`).join('')}</div>`).join('')}
+    ${cats.map((c) => `<span class="g-cat">${c}</span><div class="g-hub ${c === 'Calm' || c === 'Longer break' ? 'one' : ''}">${GAMES.filter((g) => g.cat === c).map((g) => `<button class="g-tile" data-act="playGame" data-g="${g.id}">${gIcon(g)}<span class="col" style="gap:1px;min-width:0"><b>${g.name}</b><span>${(() => { const cg = UI.cg || S.chess; return g.id === 'chessfull' && cg && !cg.over && cg.sans && cg.sans.length ? 'Resume your game · move ' + (Math.floor(cg.sans.length / 2) + 1) : g.meta; })()}</span></span></button>`).join('')}</div>`).join('')}
     <button class="g-return" data-act="resume">Return to my Quest ${ICON.arrow}</button>`);
 }
 function gameResult(id, headline, detail) {
@@ -2471,14 +2478,16 @@ const GLYPH = { K: '♔', Q: '♕', R: '♖', B: '♗', N: '♘', P: '♙', k: '
 function chessOpen() {
   if (UI.run && UI.run.running) pauseTimer('Refresher');
   closeSheet(); clearInterval(UI.gameT); UI.game = null;
-  if (!UI.cg) chessNew(UI.cgLevel || 'medium', true);
+  if (!UI.cg) { if (S.chess && S.chess.s) { UI.cg = { ...S.chess, sel: -1, thinking: false, promo: null }; UI.cgLevel = UI.cg.level; } else chessNew(UI.cgLevel || 'medium', true); }
+  UI.cg.thinking = false; UI.cg.promo = null; UI.cg.sel = -1; // never come back to a stuck "thinking" board
   if (!UI.cgStart) UI.cgStart = Date.now();
   let ov = $('chessOv'); if (!ov) { ov = document.createElement('div'); ov.id = 'chessOv'; ov.className = 'chess-ov'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', 'Chess game'); $('frame').appendChild(ov); }
-  chessRender();
+  chessRender(UI.cg.sans.length && !UI.cg.over ? `Welcome back. Your game continues from move ${Math.floor(UI.cg.sans.length / 2) + 1}.` : '');
+  if (UI.cg.s.turn === 'b' && !UI.cg.over) chessAi(); // it was the AI's turn when you left
 }
 function chessNew(level, silent) {
-  UI.cgLevel = level; UI.cg = { s: CH.start(), level, hist: [], sans: [], sel: -1, last: null, thinking: false, over: null, capW: [], capB: [] };
-  if (!silent) { haptic(8); chessRender(); }
+  UI.cgLevel = level; UI.cg = { s: CH.start(), level, hist: [], sans: [], sel: -1, last: null, thinking: false, over: null, capW: [], capB: [] }; chessSave();
+  if (!silent) { haptic(8); chessRender('New game. You play White: make the first move.'); }
 }
 function chessClose(toQuest) {
   const ov = $('chessOv'); if (ov) ov.remove(); UI.cgStart = null;
@@ -2501,18 +2510,18 @@ function chessRender(msg) {
     <div class="cg-top"><button class="gh-back" data-act="cgExit" aria-label="Back to games">${ICON.back}</button><span class="col grow" style="gap:0"><b class="gh-title">Chess</b><span class="gh-cat">Quest paused · your game is saved</span></span></div>
     <div class="cg-lvl" role="group" aria-label="AI level"><span>AI level</span>${['easy', 'medium', 'hard'].map((l) => `<button aria-pressed="${G.level === l}" data-act="cgLevel" data-v="${l}">${l[0].toUpperCase() + l.slice(1)}</button>`).join('')}</div>
     ${long && !G.over ? `<div class="g-nudge">${sv('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/>', 16)}<span class="grow">10 minutes of chess. Save it and get back to your Quest?</span><button class="g-nudge-btn" data-act="cgQuest">Back to Quest</button></div>` : ''}
-    <div class="cg-player"><span class="cg-av ai"></span><span class="col grow" style="gap:0"><b>FocusMate AI</b><span>${lvl}</span></span><span class="cg-caps">${capStr([...G.capW])}${mat < 0 ? ` <em>+${Math.round(-mat / 100)}</em>` : ''}</span></div>
+    <div class="cg-card ${s.turn === 'b' && !G.over ? 'on' : ''}"><span class="cg-av ai"></span><span class="col grow" style="gap:1px;min-width:0"><b>FocusMate AI</b>${G.capW.length ? `<span class="cg-caps">${capStr([...G.capW])}${mat < 0 ? ` <em>+${Math.round(-mat / 100)}</em>` : ''}</span>` : `<span class="cg-sub">${lvl} level</span>`}</span>${G.thinking ? '<span class="cg-chip think"><i></i><i></i><i></i>Thinking</span>' : ''}</div>
     <div class="cg-board-wrap"><div class="cg-board ${G.thinking ? 'busy' : ''}">${board}</div></div>
-    <div class="cg-player"><span class="cg-av you">${esc((S.profile?.name || 'Y')[0].toUpperCase())}</span><span class="col grow" style="gap:0"><b>${esc(S.profile?.name || 'You')}</b><span>White</span></span><span class="cg-caps">${capStr([...G.capB])}${mat > 0 ? ` <em>+${Math.round(mat / 100)}</em>` : ''}</span></div>
-    <div class="cg-status ${st.check && !G.over ? 'chk' : ''} ${G.over ? 'over' : ''}">${G.thinking ? '<span class="spinner" style="width:14px;height:14px"></span>' : ''}${msg || state}</div>
-    <div class="cg-moves" id="cgMoves">${G.sans.length ? G.sans.map((m, k) => (k % 2 === 0 ? `<span class="n">${k / 2 + 1}.</span>` : '') + `<span class="mv ${k === G.sans.length - 1 ? 'cur' : ''}">${m}</span>`).join('') : '<span class="n">Tap a white piece, then a highlighted square.</span>'}</div>
+    <div class="cg-card ${s.turn === 'w' && !G.over ? 'on' : ''}"><span class="cg-av you">${esc((S.profile?.name || 'Y')[0].toUpperCase())}</span><span class="col grow" style="gap:1px;min-width:0"><b>${esc(S.profile?.name || 'You')}</b>${G.capB.length ? `<span class="cg-caps">${capStr([...G.capB])}${mat > 0 ? ` <em>+${Math.round(mat / 100)}</em>` : ''}</span>` : '<span class="cg-sub">Playing White</span>'}</span>${G.over ? `<span class="cg-chip over">${G.over.title}</span>` : st.check && s.turn === 'w' ? '<span class="cg-chip chk">Check!</span>' : s.turn === 'w' && !G.thinking ? '<span class="cg-chip you">Your move</span>' : ''}</div>
+    ${msg ? `<div class="cg-msg">${msg}</div>` : ''}
     <div class="cg-actions"><button class="cg-btn" data-act="cgUndo" ${!G.hist.length || G.thinking ? 'disabled' : ''}>${sv('<path d="M9 14L4 9l5-5M4 9h11a5 5 0 0 1 0 10h-3"/>', 17)}Undo</button><button class="cg-btn" data-act="cgHint" ${G.over || G.thinking || s.turn !== 'w' ? 'disabled' : ''}>${sv('<path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3zM9.5 20h5"/>', 17)}Hint</button><button class="cg-btn" data-act="cgNew">${sv('<path d="M4 12a8 8 0 1 0 2.3-5.7M4 4v4h4"/>', 17)}New game</button></div>
     <button class="g-return" data-act="cgQuest">Save & return to my Quest ${ICON.arrow}</button>
     ${G.promo ? `<div class="cg-promo"><div class="cg-promo-card"><b>Promote your pawn</b><div class="row" style="gap:8px">${['Q', 'R', 'B', 'N'].map((p) => `<button class="cg-pp" data-act="cgPromo" data-v="${p}"><span class="cp w">${GLYPH[p]}&#xFE0E;</span></button>`).join('')}</div></div></div>` : ''}
     ${G.over && !G.over.hidden ? `<div class="cg-over"><div class="cg-over-card"><span class="cg-over-ico ${G.over.tone}">${G.over.tone === 'win' ? sv('<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/>', 26) : sv('<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/>', 26)}</span><h2>${G.over.title}</h2><p class="sub" style="margin:0">${G.over.detail}</p>
       <button class="cta" data-act="cgNew">Play again</button><div class="row" style="gap:8px"><button class="ghost" style="flex:1" data-act="cgReview">See the board</button><button class="ghost" style="flex:1" data-act="cgQuest">Back to Quest</button></div></div></div>` : ''}`;
-  const mv = $('cgMoves'); if (mv) mv.scrollLeft = mv.scrollWidth;
 }
+// The game is saved on this device after every move, so leaving and coming back (even after closing the app) continues it.
+function chessSave() { const G = UI.cg; if (!G) return; S.chess = { s: G.s, level: G.level, hist: G.hist.slice(-80), sans: G.sans, last: G.last, over: G.over, capW: G.capW, capB: G.capB }; save(); }
 function chessApply(m) {
   const G = UI.cg; G.hist.push({ s: G.s, capW: [...G.capW], capB: [...G.capB], last: G.last, sans: [...G.sans] });
   G.sans.push(CH.san(G.s, m)); if (m.cap) (m.piece === m.piece.toUpperCase() ? G.capB : G.capW).push(m.cap);
@@ -2522,10 +2531,11 @@ function chessApply(m) {
     G.over = { title: win ? 'You win!' : lose ? 'FocusMate AI wins' : 'Draw', detail: `${st.why}${win ? ' — beautifully played.' : lose ? '. Try again, or pick an easier level.' : '.'}`, tone: win ? 'win' : 'draw' };
     haptic(win ? [15, 40, 15, 40, 30] : [20, 40, 20]); }
   else haptic(m.cap ? [8, 20, 8] : 6);
+  chessSave();
 }
 function chessAi() {
   const G = UI.cg; if (!G || G.over || G.s.turn !== 'b') return; G.thinking = true; chessRender();
-  setTimeout(() => { if (UI.cg !== G || !$('chessOv')) return; const m = CH.bestMove(G.s, G.level); G.thinking = false; if (m) chessApply(m); chessRender(); }, 350);
+  setTimeout(() => { if (UI.cg !== G) return; if (!$('chessOv')) { G.thinking = false; return; } const m = CH.bestMove(G.s, G.level); G.thinking = false; if (m) chessApply(m); chessRender(); }, 350);
 }
 function chessTap(i) {
   const G = UI.cg; if (!G || G.over || G.thinking || G.promo || G.s.turn !== 'w') return; const p = G.s.b[i];
@@ -2608,7 +2618,7 @@ const A = {
   theme() { setFmTheme(isDark() ? 'light' : 'dark'); document.querySelectorAll('[data-act="theme"]').forEach((b) => { b.innerHTML = isDark() ? ICON.sun : ICON.moon; }); },
   setTheme(el) { setFmTheme(el.dataset.t === 'system' ? null : el.dataset.t); render(); },
   google() { signIn('student@gmail.com'); },
-  loadSample() { S = sampleState(); save(); UI.draft = null; go('dashboard'); toast('Sample data loaded. Everything is simulated.'); },
+  loadSample() { S = sampleState(); UI.cg = null; save(); UI.draft = null; go('dashboard'); toast('Sample data loaded. Everything is simulated.'); },
   aboutLevel(el) { UI.draft.level = el.dataset.v; render({ still: true }); },
   aboutHours(el) { const d = UI.draft, k = el.dataset.k; d[k] = Math.min(12, Math.max(0, d[k] + Number(el.dataset.d))); render({ still: true }); },
   aboutBlocker(el) { const d = UI.draft, v = el.dataset.v; d.blockers = d.blockers.includes(v) ? d.blockers.filter((x) => x !== v) : [...d.blockers, v]; render({ still: true }); },
@@ -2670,10 +2680,10 @@ const A = {
   cgSq(el) { chessTap(Number(el.dataset.i)); },
   cgExit() { chessClose(false); },
   cgQuest() { chessClose(true); },
-  cgLevel(el) { const G = UI.cg; if (!G) return; G.level = UI.cgLevel = el.dataset.v; chessRender(`Level: ${el.dataset.v[0].toUpperCase() + el.dataset.v.slice(1)}. Your move.`); },
+  cgLevel(el) { const G = UI.cg; if (!G) return; G.level = UI.cgLevel = el.dataset.v; chessSave(); chessRender(`Level: ${el.dataset.v[0].toUpperCase() + el.dataset.v.slice(1)}. Your move.`); },
   cgNew() { chessNew(UI.cgLevel || 'medium'); },
   cgReview() { if (UI.cg && UI.cg.over) { UI.cg.over.hidden = true; chessRender('Game over. Tap New game to play again.'); } },
-  cgUndo() { const G = UI.cg; if (!G || !G.hist.length || G.thinking) return; let h = G.hist.pop(); if (h.s.turn === 'b' && G.hist.length) h = G.hist.pop(); Object.assign(G, { s: h.s, capW: h.capW, capB: h.capB, last: h.last, sans: h.sans, sel: -1, over: null, promo: null }); if (G.s.turn === 'b') chessAi(); else chessRender('Move undone.'); },
+  cgUndo() { const G = UI.cg; if (!G || !G.hist.length || G.thinking) return; let h = G.hist.pop(); if (h.s.turn === 'b' && G.hist.length) h = G.hist.pop(); Object.assign(G, { s: h.s, capW: h.capW, capB: h.capB, last: h.last, sans: h.sans, sel: -1, over: null, promo: null }); chessSave(); if (G.s.turn === 'b') chessAi(); else chessRender('Move undone.'); },
   cgHint() { const G = UI.cg; if (!G || G.over || G.s.turn !== 'w') return; const m = CH.bestMove(G.s, 'medium'); if (!m) return; G.sel = m.from; chessRender(`Hint: try your ${({ p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king' })[m.piece.toLowerCase()]} on ${CH.sqName(m.from)}.`); },
   cgPromo(el) { const G = UI.cg; if (!G || !G.promo) return; const m = G.promo.find((x) => x.promo === el.dataset.v) || G.promo[0]; G.promo = null; chessApply(m); chessRender(); chessAi(); },
   sdkCell(el) { sdkCell(Number(el.dataset.i)); },
