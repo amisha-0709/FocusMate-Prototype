@@ -21,7 +21,7 @@ html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none}
 body{box-sizing:border-box;background:var(--backdrop);color:var(--fg);font-family:'DM Sans',system-ui,sans-serif;font-size:15px;line-height:1.45}
 button,input,textarea,select{font:inherit;color:inherit}
 button{cursor:pointer}
-.frame{position:relative;width:100%;max-width:390px;height:100%;margin:0 auto;background:var(--bg);overflow:hidden;transition:background-color .45s,color .45s}
+.frame{position:relative;width:100%;max-width:390px;height:100%;margin:0 auto;background:var(--bg);overflow:hidden;overflow:clip;transition:background-color .45s,color .45s}
 @media (min-width:601px){body{display:flex;align-items:center;justify-content:center;padding:20px 16px}.frame{height:min(844px,100%);border-radius:44px;box-shadow:0 30px 80px rgba(0,0,0,calc(.45*var(--sh) + .1)),0 0 0 1px rgba(var(--i),.08)}}
 .scr{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:18px 18px 28px;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;scrollbar-width:none}
 .scr.nav-pad{padding-bottom:calc(128px + env(safe-area-inset-bottom, 0px))}
@@ -578,6 +578,55 @@ nav.bn.tab-changed .dock button[aria-current="page"] svg{animation:tabPop .45s c
 .med-line{margin:0;min-height:44px;text-align:center;font-size:16px;font-weight:600;color:var(--soft);max-width:280px}
 .med-line.in{animation:rise .6s cubic-bezier(.2,.8,.2,1) both}
 @media (prefers-reduced-motion: reduce){.med-core,.med-line.in,.g-result .g-ico{animation:none}}
+.chess-ov{position:absolute;inset:0;z-index:40;background:var(--bg);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:16px 14px 20px;box-sizing:border-box;display:flex;flex-direction:column;gap:10px;animation:screenIn .3s cubic-bezier(.2,.8,.2,1) both}
+:root:not([data-fm-theme="light"]) .chess-ov{background:radial-gradient(90% 30% at 50% 0%,rgba(181,136,99,.16),rgba(181,136,99,0) 70%),#101017}
+.cg-top{display:flex;align-items:center;gap:10px}
+.cg-lvl{display:flex;align-items:center;gap:6px;padding:4px;border-radius:14px;background:rgba(var(--i),.05)}
+.cg-lvl span{font-size:11.5px;font-weight:800;color:var(--muted);padding:0 6px 0 8px;white-space:nowrap}
+.cg-lvl button{flex:1;min-height:36px;border:none;border-radius:11px;background:none;color:var(--muted);font:inherit;font-weight:800;font-size:12.5px}
+.cg-lvl button[aria-pressed="true"]{background:linear-gradient(180deg,#FFC56B,#FF9F43);color:#5A2400;box-shadow:0 3px 10px rgba(255,159,67,.3)}
+.cg-player{display:flex;align-items:center;gap:10px;padding:4px;min-width:0}
+.cg-player b{font-size:14px}.cg-player .col>span{font-size:11.5px;font-weight:600;color:var(--muted)}
+.cg-av{width:34px;height:34px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:800;color:#5A2400}
+.cg-av.ai{background:radial-gradient(circle at 35% 30%,#E3E7FF,#A9B4FF 55%,#6E7BF2);box-shadow:0 0 12px rgba(140,155,255,.45)}
+.cg-av.you{background:linear-gradient(145deg,#FFCB74,#F47E3C)}
+.cg-caps{font-size:17px;letter-spacing:-3px;color:var(--soft);font-family:'Segoe UI Symbol','Apple Symbols','Noto Sans Symbols2',serif;white-space:nowrap;overflow:hidden;max-width:45%}
+.cg-caps em{font-style:normal;font-family:'DM Sans',sans-serif;letter-spacing:0;font-size:12px;font-weight:800;color:var(--mint)}
+.cg-board-wrap{display:flex;justify-content:center}
+.cg-board{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));width:100%;max-width:370px;border-radius:14px;overflow:hidden;box-shadow:0 14px 36px rgba(60,30,10,calc(.35*var(--sh) + .12)),0 0 0 3px rgba(181,136,99,.35);transition:filter .2s}
+.cg-board.busy{filter:saturate(.85)}
+.cq{position:relative;aspect-ratio:1;border:none;padding:0;display:flex;align-items:center;justify-content:center;font:inherit;transition:none}
+.cq.l{background:#EEDDC4}.cq.d{background:#B58863}
+.cq.last.l{background:#F3D98A}.cq.last.d{background:#D7AF5C}
+.cq.sel{background:#FFC56B!important;box-shadow:inset 0 0 0 3px #FF9F43}
+.cq.chk{background:radial-gradient(circle,#FF6B5A 0%,#E0503F 45%,rgba(224,80,63,.2) 80%)!important}
+.cq.tgt::after{content:'';position:absolute;width:30%;height:30%;border-radius:50%;background:rgba(28,18,6,.28)}
+.cq.tgt.cap::after{width:88%;height:88%;background:none;border:4px solid rgba(28,18,6,.3)}
+.cp{font-size:clamp(28px,9.2vw,38px);line-height:1;font-family:'Segoe UI Symbol','Apple Symbols','Noto Sans Symbols2',serif;position:relative;z-index:1;transition:transform .15s}
+.cp.w{color:#FFFDF8;text-shadow:0 0 1px #2A1A0A,0 0 1px #2A1A0A,0 0 1px #2A1A0A,0 2px 3px rgba(0,0,0,.45)}
+.cp.b{color:#1C1206;text-shadow:0 1px 2px rgba(255,255,255,.25)}
+.cq.sel .cp{transform:scale(1.12) translateY(-2px)}
+.cq-r,.cq-f{position:absolute;font-size:9px;font-weight:800;font-style:normal;color:rgba(60,30,10,.55);pointer-events:none}
+.cq-r{top:2px;left:3px}.cq-f{bottom:1px;right:3px}
+.cg-status{display:flex;align-items:center;justify-content:center;gap:8px;min-height:36px;border-radius:12px;font-weight:800;font-size:14px;color:var(--soft);background:rgba(var(--i),.05)}
+.cg-status.chk{color:#fff;background:linear-gradient(160deg,#FF8A7A,#EE5A47);animation:pop .35s both}
+.cg-status.over{color:var(--amber);background:rgba(255,181,71,.14)}
+.cg-moves{display:flex;gap:6px;align-items:center;overflow-x:auto;white-space:nowrap;scrollbar-width:none;padding:2px 2px;font-size:13px;min-height:28px}
+.cg-moves::-webkit-scrollbar{display:none}
+.cg-moves .n{color:var(--faint);font-weight:700}
+.cg-moves .mv{font-weight:700;padding:3px 7px;border-radius:8px;background:rgba(var(--i),.05)}
+.cg-moves .mv.cur{background:rgba(255,181,71,.2);color:var(--amber)}
+.cg-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cg-btn{display:flex;align-items:center;justify-content:center;gap:6px;min-height:46px;border-radius:14px;border:1px solid var(--surface-edge);background:var(--surface);box-shadow:var(--surface-shadow);color:var(--fg);font:inherit;font-weight:800;font-size:13px}
+.cg-btn:disabled{opacity:.45}
+.cg-promo,.cg-over{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(10,8,20,.45);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:screenIn .25s both}
+.cg-promo-card,.cg-over-card{width:100%;max-width:320px;display:flex;flex-direction:column;align-items:center;gap:12px;padding:22px;border-radius:26px;background:var(--bg);box-shadow:0 24px 60px rgba(0,0,0,.35);text-align:center}
+.cg-over-card .cta,.cg-over-card .row{width:100%}
+.cg-pp{width:58px;height:58px;border-radius:16px;border:1px solid var(--surface-edge);background:#B58863;display:flex;align-items:center;justify-content:center}
+.cg-pp .cp{font-size:38px}
+.cg-over-ico{width:62px;height:62px;border-radius:20px;display:flex;align-items:center;justify-content:center;animation:pop .5s both}
+.cg-over-ico.win{background:rgba(255,181,71,.18);color:var(--amber)}.cg-over-ico.draw{background:rgba(140,155,255,.16);color:var(--peri)}
+@media (prefers-reduced-motion: reduce){.chess-ov,.cg-promo,.cg-over,.cg-over-ico,.cg-status.chk{animation:none}}
 .card.fstrip{flex-direction:row;justify-content:space-between;align-items:stretch;gap:0;padding:12px 6px}
 .fs-item{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
 .fs-item+.fs-item{border-left:1px solid rgba(var(--i),.07)}
@@ -2120,6 +2169,7 @@ const GAMES = [
   { id: 'sudoku', cat: 'Puzzles', name: 'Mini Sudoku', meta: '4×4 · ~2 min', hex: '#8C9BFF', ink: 'var(--peri)', icon: '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M12 3v18M3 12h18"/>' },
   { id: 'chess', cat: 'Puzzles', name: 'Chess Puzzle', meta: 'Mate in one', hex: '#5FC8E0', ink: 'var(--peri)', icon: '<path d="M9 21h6M8 18h8l-1-6h-6zM9 12l-1-4 2 1 2-4 2 4 2-1-1 4"/>' },
   { id: 'crossword', cat: 'Puzzles', name: 'Mini Crossword', meta: '4×4 · ~2 min', hex: '#FFB547', ink: 'var(--amber)', icon: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/>' },
+  { id: 'chessfull', cat: 'Longer break', name: 'Play Chess', meta: 'vs FocusMate AI · 3 levels', hex: '#B58863', ink: 'var(--amber)', icon: '<path d="M9 21h6M8 18h8l-1-6h-6zM9 12l-1-4 2 1 2-4 2 4 2-1-1 4"/>' },
   { id: 'meditate', cat: 'Calm', name: '1-minute meditation', meta: 'Guided · 60 sec', hex: '#6FD6A8', ink: 'var(--mint)', icon: '<circle cx="12" cy="5" r="2"/><path d="M12 8v5M6 20c1-3 3-4 6-4s5 1 6 4M7 12c2 1 3 1 5 1s3 0 5-1"/>' },
 ];
 const gameById = (id) => GAMES.find((g) => g.id === id);
@@ -2134,10 +2184,10 @@ function openGames() {
   if (UI.run && UI.run.running) pauseTimer('Refresher');
   clearInterval(UI.gameT); UI.game = null; if (!UI.refStart) UI.refStart = Date.now();
   const long = Date.now() - UI.refStart > REFRESH_NUDGE_MS;
-  const cats = ['Quick brain', 'Puzzles', 'Calm'];
+  const cats = ['Quick brain', 'Puzzles', 'Longer break', 'Calm'];
   sheet(`<div class="gh" style="margin-bottom:-4px"><button class="gh-back" data-act="takeBreak" aria-label="Back to break options">${ICON.back}</button><span class="col grow" style="gap:0"><b class="gh-title">Focus <span class="serif">refresher</span></b><span class="gh-cat">Quest paused${UI.run ? ' at ' + fmt(leftMs()) : ''} · no points here</span></span></div>
     ${long ? `<div class="g-nudge">${sv('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/>', 16)}<span class="grow">You've refreshed for 5 minutes. Ready to get back?</span><button class="g-nudge-btn" data-act="resume">Back to Quest</button></div>` : ''}
-    ${cats.map((c) => `<span class="g-cat">${c}</span><div class="g-hub ${c === 'Calm' ? 'one' : ''}">${GAMES.filter((g) => g.cat === c).map((g) => `<button class="g-tile" data-act="playGame" data-g="${g.id}">${gIcon(g)}<span class="col" style="gap:1px;min-width:0"><b>${g.name}</b><span>${g.meta}</span></span></button>`).join('')}</div>`).join('')}
+    ${cats.map((c) => `<span class="g-cat">${c}</span><div class="g-hub ${c === 'Calm' || c === 'Longer break' ? 'one' : ''}">${GAMES.filter((g) => g.cat === c).map((g) => `<button class="g-tile" data-act="playGame" data-g="${g.id}">${gIcon(g)}<span class="col" style="gap:1px;min-width:0"><b>${g.name}</b><span>${g.id === 'chessfull' && UI.cg && !UI.cg.over && UI.cg.hist.length ? 'Resume your game · move ' + (Math.floor(UI.cg.sans.length / 2) + 1) : g.meta}</span></span></button>`).join('')}</div>`).join('')}
     <button class="g-return" data-act="resume">Return to my Quest ${ICON.arrow}</button>`);
 }
 function gameResult(id, headline, detail) {
@@ -2160,6 +2210,7 @@ function startGame(id) {
   if (id === 'chess') return chessStart();
   if (id === 'crossword') return xwStart();
   if (id === 'meditate') return meditateStart();
+  if (id === 'chessfull') { UI.game = null; return chessOpen(); }
   G.end = Date.now() + (id === 'colour' ? 30000 : 45000);
   nextItem(); paintGame(); runClock(G, () => quickOver(G));
 }
@@ -2305,6 +2356,187 @@ function meditateStart() {
   }, 250);
 }
 
+/* ---------- Full chess: play White against the FocusMate AI, full screen ----------
+   Rules: legal moves only, check, checkmate, stalemate, castling, en passant, promotion,
+   draw by insufficient material and the 50-move rule. The Quest stays paused while you play;
+   after 10 minutes a gentle reminder offers to save the game and go back. */
+const CH = (() => {
+  const VAL = { p: 100, n: 320, b: 330, r: 500, q: 900, k: 0 };
+  const PST_P = [0, 0, 0, 0, 0, 0, 0, 0, 50, 50, 50, 50, 50, 50, 50, 50, 10, 10, 20, 30, 30, 20, 10, 10, 5, 5, 10, 25, 25, 10, 5, 5, 0, 0, 0, 20, 20, 0, 0, 0, 5, -5, -10, 0, 0, -10, -5, 5, 5, 10, 10, -20, -20, 10, 10, 5, 0, 0, 0, 0, 0, 0, 0, 0];
+  const PST_N = [-50, -40, -30, -30, -30, -30, -40, -50, -40, -20, 0, 0, 0, 0, -20, -40, -30, 0, 10, 15, 15, 10, 0, -30, -30, 5, 15, 20, 20, 15, 5, -30, -30, 0, 15, 20, 20, 15, 0, -30, -30, 5, 10, 15, 15, 10, 5, -30, -40, -20, 0, 5, 5, 0, -20, -40, -50, -40, -30, -30, -30, -30, -40, -50];
+  const CENTER = [0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 0, 0, 5, 10, 10, 10, 10, 5, 0, 0, 5, 10, 15, 15, 10, 5, 0, 0, 5, 10, 15, 15, 10, 5, 0, 0, 5, 10, 10, 10, 10, 5, 0, 0, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  const isW = (p) => p && p === p.toUpperCase();
+  const col = (p) => (p ? (isW(p) ? 'w' : 'b') : null);
+  const sqName = (i) => 'abcdefgh'[i % 8] + (8 - Math.floor(i / 8));
+  const N_OFF = [[-2, -1], [-2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2], [2, -1], [2, 1]];
+  const K_OFF = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
+  const DIAG = [[-1, -1], [-1, 1], [1, -1], [1, 1]], ORTH = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+  function start() {
+    const b = Array(64).fill('');
+    'rnbqkbnr'.split('').forEach((p, f) => { b[f] = p; b[56 + f] = p.toUpperCase(); b[8 + f] = 'p'; b[48 + f] = 'P'; });
+    return { b, turn: 'w', castle: { K: true, Q: true, k: true, q: true }, ep: -1, half: 0, moves: [] };
+  }
+  function attacked(b, sq, by) {
+    const r = Math.floor(sq / 8), f = sq % 8; const at = (rr, ff) => (rr >= 0 && rr < 8 && ff >= 0 && ff < 8 ? b[rr * 8 + ff] : null);
+    const pd = by === 'w' ? 1 : -1; // white pawns attack upward (from higher rows)
+    for (const df of [-1, 1]) { const p = at(r + pd, f + df); if (p && p === (by === 'w' ? 'P' : 'p')) return true; }
+    for (const [dr, df] of N_OFF) { const p = at(r + dr, f + df); if (p && p === (by === 'w' ? 'N' : 'n')) return true; }
+    for (const [dr, df] of K_OFF) { const p = at(r + dr, f + df); if (p && p === (by === 'w' ? 'K' : 'k')) return true; }
+    for (const [dirs, set] of [[DIAG, 'bq'], [ORTH, 'rq']]) for (const [dr, df] of dirs) { let rr = r + dr, ff = f + df; while (rr >= 0 && rr < 8 && ff >= 0 && ff < 8) { const p = b[rr * 8 + ff]; if (p) { if (col(p) === by && set.includes(p.toLowerCase())) return true; break; } rr += dr; ff += df; } }
+    return false;
+  }
+  const kingSq = (b, c) => b.indexOf(c === 'w' ? 'K' : 'k');
+  const inCheck = (s, c = s.turn) => attacked(s.b, kingSq(s.b, c), c === 'w' ? 'b' : 'w');
+  function pseudo(s) {
+    const { b, turn } = s; const out = [];
+    for (let i = 0; i < 64; i++) {
+      const p = b[i]; if (!p || col(p) !== turn) continue; const r = Math.floor(i / 8), f = i % 8; const t = p.toLowerCase();
+      const push = (to, extra = {}) => out.push({ from: i, to, piece: p, cap: b[to] || (extra.ep ? (turn === 'w' ? 'p' : 'P') : ''), ...extra });
+      if (t === 'p') {
+        const dir = turn === 'w' ? -1 : 1, startRow = turn === 'w' ? 6 : 1, lastRow = turn === 'w' ? 0 : 7; const one = i + dir * 8;
+        const addP = (to, ex = {}) => { if (Math.floor(to / 8) === lastRow) ['q', 'r', 'b', 'n'].forEach((pr) => push(to, { ...ex, promo: turn === 'w' ? pr.toUpperCase() : pr })); else push(to, ex); };
+        if (one >= 0 && one < 64 && !b[one]) { addP(one); if (r === startRow && !b[one + dir * 8]) push(one + dir * 8, { double: true }); }
+        for (const df of [-1, 1]) { const ff = f + df, rr = r + dir; if (ff < 0 || ff > 7 || rr < 0 || rr > 7) continue; const to = rr * 8 + ff; if (b[to] && col(b[to]) !== turn) addP(to); else if (to === s.ep) push(to, { ep: true }); }
+      } else if (t === 'n' || t === 'k') {
+        for (const [dr, df] of (t === 'n' ? N_OFF : K_OFF)) { const rr = r + dr, ff = f + df; if (rr < 0 || rr > 7 || ff < 0 || ff > 7) continue; const to = rr * 8 + ff; if (!b[to] || col(b[to]) !== turn) push(to); }
+        if (t === 'k') {
+          const opp = turn === 'w' ? 'b' : 'w', base = turn === 'w' ? 60 : 4, K = turn === 'w' ? 'K' : 'k', Q = turn === 'w' ? 'Q' : 'q';
+          if (i === base && !attacked(b, base, opp)) {
+            if (s.castle[K] && !b[base + 1] && !b[base + 2] && b[base + 3] === (turn === 'w' ? 'R' : 'r') && !attacked(b, base + 1, opp) && !attacked(b, base + 2, opp)) push(base + 2, { castle: 'K' });
+            if (s.castle[Q] && !b[base - 1] && !b[base - 2] && !b[base - 3] && b[base - 4] === (turn === 'w' ? 'R' : 'r') && !attacked(b, base - 1, opp) && !attacked(b, base - 2, opp)) push(base - 2, { castle: 'Q' });
+          }
+        }
+      } else {
+        const dirs = t === 'b' ? DIAG : t === 'r' ? ORTH : [...DIAG, ...ORTH];
+        for (const [dr, df] of dirs) { let rr = r + dr, ff = f + df; while (rr >= 0 && rr < 8 && ff >= 0 && ff < 8) { const to = rr * 8 + ff; if (b[to]) { if (col(b[to]) !== turn) push(to); break; } push(to); rr += dr; ff += df; } }
+      }
+    }
+    return out;
+  }
+  function make(s, m) {
+    const b = s.b.slice(); const turn = s.turn; const castle = { ...s.castle };
+    b[m.to] = m.promo || m.piece; b[m.from] = '';
+    if (m.ep) b[m.to + (turn === 'w' ? 8 : -8)] = '';
+    if (m.castle) { const base = turn === 'w' ? 60 : 4; if (m.castle === 'K') { b[base + 1] = b[base + 3]; b[base + 3] = ''; } else { b[base - 1] = b[base - 4]; b[base - 4] = ''; } }
+    if (m.piece === 'K') { castle.K = castle.Q = false; } if (m.piece === 'k') { castle.k = castle.q = false; }
+    [[63, 'K'], [56, 'Q'], [7, 'k'], [0, 'q']].forEach(([sq, key]) => { if (m.from === sq || m.to === sq) castle[key] = false; });
+    return { b, turn: turn === 'w' ? 'b' : 'w', castle, ep: m.double ? (m.from + m.to) / 2 : -1, half: m.piece.toLowerCase() === 'p' || m.cap ? 0 : s.half + 1, moves: s.moves };
+  }
+  const legal = (s) => pseudo(s).filter((m) => !inCheck(make(s, m), s.turn));
+  function insufficient(b) {
+    const rest = b.filter((p) => p && p.toLowerCase() !== 'k');
+    return rest.length === 0 || (rest.length === 1 && 'nb'.includes(rest[0].toLowerCase()));
+  }
+  function status(s) {
+    const ms = legal(s);
+    if (!ms.length) return inCheck(s) ? { over: true, result: s.turn === 'w' ? 'b' : 'w', why: 'Checkmate' } : { over: true, result: 'draw', why: 'Stalemate' };
+    if (insufficient(s.b)) return { over: true, result: 'draw', why: 'Not enough pieces to checkmate' };
+    if (s.half >= 100) return { over: true, result: 'draw', why: '50-move rule' };
+    return { over: false, check: inCheck(s), moves: ms };
+  }
+  function evaluate(b) {
+    let sc = 0;
+    for (let i = 0; i < 64; i++) { const p = b[i]; if (!p) continue; const t = p.toLowerCase(); const w = isW(p); const idx = w ? i : (7 - Math.floor(i / 8)) * 8 + (i % 8);
+      const v = VAL[t] + (t === 'p' ? PST_P[idx] : t === 'n' ? PST_N[idx] : t === 'k' ? 0 : CENTER[idx] / 2); sc += w ? v : -v; }
+    return sc;
+  }
+  function search(s, depth, alpha, beta) {
+    const ms = legal(s);
+    if (!ms.length) return inCheck(s) ? (s.turn === 'w' ? -99999 - depth : 99999 + depth) : 0;
+    if (depth === 0) return evaluate(s.b);
+    ms.sort((a, c) => (c.cap ? VAL[c.cap.toLowerCase()] : 0) - (a.cap ? VAL[a.cap.toLowerCase()] : 0));
+    if (s.turn === 'w') { let best = -Infinity; for (const m of ms) { best = Math.max(best, search(make(s, m), depth - 1, alpha, beta)); alpha = Math.max(alpha, best); if (alpha >= beta) break; } return best; }
+    let best = Infinity; for (const m of ms) { best = Math.min(best, search(make(s, m), depth - 1, alpha, beta)); beta = Math.min(beta, best); if (alpha >= beta) break; } return best;
+  }
+  function bestMove(s, level) {
+    const ms = legal(s); if (!ms.length) return null;
+    if (level === 'easy') { const caps = ms.filter((m) => m.cap); const pool = caps.length && Math.random() < 0.5 ? caps : ms; return pool[Math.floor(Math.random() * pool.length)]; }
+    const depth = level === 'hard' ? 3 : 2; const sign = s.turn === 'w' ? 1 : -1;
+    let best = null, bestSc = -Infinity;
+    for (const m of ms) { const sc = sign * search(make(s, m), depth - 1, -Infinity, Infinity) + Math.random() * 6; if (sc > bestSc) { bestSc = sc; best = m; } }
+    return best;
+  }
+  function san(s, m) {
+    if (m.castle) return m.castle === 'K' ? 'O-O' : 'O-O-O';
+    const t = m.piece.toUpperCase(); const to = sqName(m.to); let str;
+    if (t === 'P') str = (m.cap ? sqName(m.from)[0] + 'x' : '') + to + (m.promo ? '=' + m.promo.toUpperCase() : '');
+    else { const twin = legal(s).filter((x) => x.piece === m.piece && x.to === m.to && x.from !== m.from); const dis = twin.length ? (twin.some((x) => x.from % 8 === m.from % 8) ? sqName(m.from)[1] : sqName(m.from)[0]) : ''; str = t + dis + (m.cap ? 'x' : '') + to; }
+    const n = make(s, m); const st = status(n); return str + (st.over && st.why === 'Checkmate' ? '#' : inCheck(n) ? '+' : '');
+  }
+  return { start, legal, make, status, bestMove, san, inCheck, kingSq, sqName, VAL };
+})();
+
+const CHESS_REMIND_MS = 10 * 60000;
+const GLYPH = { K: '♔', Q: '♕', R: '♖', B: '♗', N: '♘', P: '♙', k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟' };
+function chessOpen() {
+  if (UI.run && UI.run.running) pauseTimer('Refresher');
+  closeSheet(); clearInterval(UI.gameT); UI.game = null;
+  if (!UI.cg) chessNew(UI.cgLevel || 'medium', true);
+  if (!UI.cgStart) UI.cgStart = Date.now();
+  let ov = $('chessOv'); if (!ov) { ov = document.createElement('div'); ov.id = 'chessOv'; ov.className = 'chess-ov'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', 'Chess game'); $('frame').appendChild(ov); }
+  chessRender();
+}
+function chessNew(level, silent) {
+  UI.cgLevel = level; UI.cg = { s: CH.start(), level, hist: [], sans: [], sel: -1, last: null, thinking: false, over: null, capW: [], capB: [] };
+  if (!silent) { haptic(8); chessRender(); }
+}
+function chessClose(toQuest) {
+  const ov = $('chessOv'); if (ov) ov.remove(); UI.cgStart = null;
+  if (toQuest) { UI.refStart = null; resumeTimer(); toast('Game saved. Back to your Quest.'); } else openGames();
+}
+function chessRender(msg) {
+  const ov = $('chessOv'); if (!ov) return; const G = UI.cg; const s = G.s; const st = CH.status(s);
+  const targets = G.sel >= 0 && !G.over ? CH.legal(s).filter((m) => m.from === G.sel).map((m) => m.to) : [];
+  const chkSq = !st.over && st.check ? CH.kingSq(s.b, s.turn) : -1;
+  let board = '';
+  for (let i = 0; i < 64; i++) { const r = Math.floor(i / 8), f = i % 8; const p = s.b[i]; const dark = (r + f) % 2 === 1;
+    const cls = ['cq', dark ? 'd' : 'l', G.sel === i ? 'sel' : '', G.last && (G.last.from === i || G.last.to === i) ? 'last' : '', chkSq === i ? 'chk' : '', targets.includes(i) ? (p ? 'tgt cap' : 'tgt') : ''].filter(Boolean).join(' ');
+    board += `<button class="${cls}" data-act="cgSq" data-i="${i}" aria-label="${CH.sqName(i)}${p ? ' ' + (p === p.toUpperCase() ? 'white ' : 'black ') + { k: 'king', q: 'queen', r: 'rook', b: 'bishop', n: 'knight', p: 'pawn' }[p.toLowerCase()] : ''}">${p ? `<span class="cp ${p === p.toUpperCase() ? 'w' : 'b'}">${GLYPH[p]}&#xFE0E;</span>` : ''}${f === 0 ? `<i class="cq-r">${8 - r}</i>` : ''}${r === 7 ? `<i class="cq-f">${'abcdefgh'[f]}</i>` : ''}</button>`; }
+  const capStr = (arr) => arr.sort((a, c) => CH.VAL[c.toLowerCase()] - CH.VAL[a.toLowerCase()]).map((p) => GLYPH[p] + '&#xFE0E;').join('');
+  const mat = G.capB.reduce((a, p) => a + CH.VAL[p.toLowerCase()], 0) - G.capW.reduce((a, p) => a + CH.VAL[p.toLowerCase()], 0);
+  const lvl = { easy: 'Easy', medium: 'Medium', hard: 'Hard' }[G.level];
+  const state = G.over ? G.over.title : G.thinking ? 'FocusMate AI is thinking…' : st.check ? 'Check! Protect your king.' : s.turn === 'w' ? 'Your move' : 'AI to move';
+  const long = UI.cgStart && Date.now() - UI.cgStart > CHESS_REMIND_MS;
+  ov.innerHTML = `
+    <div class="cg-top"><button class="gh-back" data-act="cgExit" aria-label="Back to games">${ICON.back}</button><span class="col grow" style="gap:0"><b class="gh-title">Chess</b><span class="gh-cat">Quest paused · your game is saved</span></span></div>
+    <div class="cg-lvl" role="group" aria-label="AI level"><span>AI level</span>${['easy', 'medium', 'hard'].map((l) => `<button aria-pressed="${G.level === l}" data-act="cgLevel" data-v="${l}">${l[0].toUpperCase() + l.slice(1)}</button>`).join('')}</div>
+    ${long && !G.over ? `<div class="g-nudge">${sv('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/>', 16)}<span class="grow">10 minutes of chess. Save it and get back to your Quest?</span><button class="g-nudge-btn" data-act="cgQuest">Back to Quest</button></div>` : ''}
+    <div class="cg-player"><span class="cg-av ai"></span><span class="col grow" style="gap:0"><b>FocusMate AI</b><span>${lvl}</span></span><span class="cg-caps">${capStr([...G.capW])}${mat < 0 ? ` <em>+${Math.round(-mat / 100)}</em>` : ''}</span></div>
+    <div class="cg-board-wrap"><div class="cg-board ${G.thinking ? 'busy' : ''}">${board}</div></div>
+    <div class="cg-player"><span class="cg-av you">${esc((S.profile?.name || 'Y')[0].toUpperCase())}</span><span class="col grow" style="gap:0"><b>${esc(S.profile?.name || 'You')}</b><span>White</span></span><span class="cg-caps">${capStr([...G.capB])}${mat > 0 ? ` <em>+${Math.round(mat / 100)}</em>` : ''}</span></div>
+    <div class="cg-status ${st.check && !G.over ? 'chk' : ''} ${G.over ? 'over' : ''}">${G.thinking ? '<span class="spinner" style="width:14px;height:14px"></span>' : ''}${msg || state}</div>
+    <div class="cg-moves" id="cgMoves">${G.sans.length ? G.sans.map((m, k) => (k % 2 === 0 ? `<span class="n">${k / 2 + 1}.</span>` : '') + `<span class="mv ${k === G.sans.length - 1 ? 'cur' : ''}">${m}</span>`).join('') : '<span class="n">Tap a white piece, then a highlighted square.</span>'}</div>
+    <div class="cg-actions"><button class="cg-btn" data-act="cgUndo" ${!G.hist.length || G.thinking ? 'disabled' : ''}>${sv('<path d="M9 14L4 9l5-5M4 9h11a5 5 0 0 1 0 10h-3"/>', 17)}Undo</button><button class="cg-btn" data-act="cgHint" ${G.over || G.thinking || s.turn !== 'w' ? 'disabled' : ''}>${sv('<path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3zM9.5 20h5"/>', 17)}Hint</button><button class="cg-btn" data-act="cgNew">${sv('<path d="M4 12a8 8 0 1 0 2.3-5.7M4 4v4h4"/>', 17)}New game</button></div>
+    <button class="g-return" data-act="cgQuest">Save & return to my Quest ${ICON.arrow}</button>
+    ${G.promo ? `<div class="cg-promo"><div class="cg-promo-card"><b>Promote your pawn</b><div class="row" style="gap:8px">${['Q', 'R', 'B', 'N'].map((p) => `<button class="cg-pp" data-act="cgPromo" data-v="${p}"><span class="cp w">${GLYPH[p]}&#xFE0E;</span></button>`).join('')}</div></div></div>` : ''}
+    ${G.over && !G.over.hidden ? `<div class="cg-over"><div class="cg-over-card"><span class="cg-over-ico ${G.over.tone}">${G.over.tone === 'win' ? sv('<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/>', 26) : sv('<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/>', 26)}</span><h2>${G.over.title}</h2><p class="sub" style="margin:0">${G.over.detail}</p>
+      <button class="cta" data-act="cgNew">Play again</button><div class="row" style="gap:8px"><button class="ghost" style="flex:1" data-act="cgReview">See the board</button><button class="ghost" style="flex:1" data-act="cgQuest">Back to Quest</button></div></div></div>` : ''}`;
+  const mv = $('cgMoves'); if (mv) mv.scrollLeft = mv.scrollWidth;
+}
+function chessApply(m) {
+  const G = UI.cg; G.hist.push({ s: G.s, capW: [...G.capW], capB: [...G.capB], last: G.last, sans: [...G.sans] });
+  G.sans.push(CH.san(G.s, m)); if (m.cap) (m.piece === m.piece.toUpperCase() ? G.capB : G.capW).push(m.cap);
+  G.s = CH.make(G.s, m); G.last = m; G.sel = -1;
+  const st = CH.status(G.s);
+  if (st.over) { const win = st.result === 'w', lose = st.result === 'b';
+    G.over = { title: win ? 'You win!' : lose ? 'FocusMate AI wins' : 'Draw', detail: `${st.why}${win ? ' — beautifully played.' : lose ? '. Try again, or pick an easier level.' : '.'}`, tone: win ? 'win' : 'draw' };
+    haptic(win ? [15, 40, 15, 40, 30] : [20, 40, 20]); }
+  else haptic(m.cap ? [8, 20, 8] : 6);
+}
+function chessAi() {
+  const G = UI.cg; if (!G || G.over || G.s.turn !== 'b') return; G.thinking = true; chessRender();
+  setTimeout(() => { if (UI.cg !== G || !$('chessOv')) return; const m = CH.bestMove(G.s, G.level); G.thinking = false; if (m) chessApply(m); chessRender(); }, 350);
+}
+function chessTap(i) {
+  const G = UI.cg; if (!G || G.over || G.thinking || G.promo || G.s.turn !== 'w') return; const p = G.s.b[i];
+  if (G.sel >= 0) {
+    const cands = CH.legal(G.s).filter((m) => m.from === G.sel && m.to === i);
+    if (cands.length) { if (cands[0].promo) { G.promo = cands; return chessRender(); } chessApply(cands[0]); chessRender(); return chessAi(); }
+  }
+  if (p && p === p.toUpperCase()) { G.sel = G.sel === i ? -1 : i; haptic(5); return chessRender(); }
+  G.sel = -1; chessRender();
+}
+
 /* Recovery tools */
 function openReset() {
   const R = UI.run; if (R) pauseTimer('Reset'); UI.resets = (UI.resets || 0) + 1;
@@ -2435,6 +2667,15 @@ const A = {
   playGame(el) { startGame(el.dataset.g); },
   gameAnswer(el) { gameAnswer(el.dataset.v); },
   gameCell(el) { gameCell(Number(el.dataset.i)); },
+  cgSq(el) { chessTap(Number(el.dataset.i)); },
+  cgExit() { chessClose(false); },
+  cgQuest() { chessClose(true); },
+  cgLevel(el) { const G = UI.cg; if (!G) return; G.level = UI.cgLevel = el.dataset.v; chessRender(`Level: ${el.dataset.v[0].toUpperCase() + el.dataset.v.slice(1)}. Your move.`); },
+  cgNew() { chessNew(UI.cgLevel || 'medium'); },
+  cgReview() { if (UI.cg && UI.cg.over) { UI.cg.over.hidden = true; chessRender('Game over. Tap New game to play again.'); } },
+  cgUndo() { const G = UI.cg; if (!G || !G.hist.length || G.thinking) return; let h = G.hist.pop(); if (h.s.turn === 'b' && G.hist.length) h = G.hist.pop(); Object.assign(G, { s: h.s, capW: h.capW, capB: h.capB, last: h.last, sans: h.sans, sel: -1, over: null, promo: null }); if (G.s.turn === 'b') chessAi(); else chessRender('Move undone.'); },
+  cgHint() { const G = UI.cg; if (!G || G.over || G.s.turn !== 'w') return; const m = CH.bestMove(G.s, 'medium'); if (!m) return; G.sel = m.from; chessRender(`Hint: try your ${({ p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king' })[m.piece.toLowerCase()]} on ${CH.sqName(m.from)}.`); },
+  cgPromo(el) { const G = UI.cg; if (!G || !G.promo) return; const m = G.promo.find((x) => x.promo === el.dataset.v) || G.promo[0]; G.promo = null; chessApply(m); chessRender(); chessAi(); },
   sdkCell(el) { sdkCell(Number(el.dataset.i)); },
   sdkNum(el) { sdkNum(el.dataset.v); },
   chessSq(el) { chessSq(el.dataset.sq); },
