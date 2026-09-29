@@ -1,7 +1,8 @@
 <title>FocusMate Prototype App</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Instrument+Serif:ital@0;1&family=Inter:wght@500;600;700;800&display=swap">
 <style>
 :root{
+  --numf:-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Inter',system-ui,sans-serif;
   color-scheme:dark;
   --bg:#101017;--card:#1A1A23;--fg:#F5F2EC;--soft:#C9C6BE;--muted:#A09FA8;--faint:#8C8B96;
   --i:255,255,255;--c:30,30,40;--b:16,16,23;--sh:1;
@@ -131,7 +132,7 @@ button.card{width:100%;font:inherit}
 .chip span{font-size:10.5px;color:var(--muted);text-align:center}
 .chip[aria-pressed="true"]{border-color:#FFB547;background:rgba(255,181,71,.14)}
 .stepper{width:44px;height:44px;border-radius:14px;border:1px solid rgba(var(--i),.07);background:rgba(var(--i),.05);font-size:20px;padding:0}
-.num{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;letter-spacing:-1px;line-height:1;font-variant-numeric:tabular-nums}
+.num{font-family:var(--numf);font-weight:700;letter-spacing:-.5px;line-height:1;font-variant-numeric:tabular-nums}
 .track{height:6px;border-radius:3px;background:rgba(var(--i),.1);overflow:hidden;flex-grow:1}
 .track i{display:block;height:100%;border-radius:3px;transform-origin:left;animation:fillx 1.2s cubic-bezier(.2,.8,.2,1) .35s both}
 .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
@@ -202,7 +203,7 @@ nav.bn{position:absolute;left:0;right:0;bottom:0;z-index:10;box-sizing:border-bo
 .timer-glow{position:absolute;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(255,164,64,.35),rgba(255,164,64,0) 70%);animation:glow 4s ease-in-out infinite}
 .timer-wrap svg{position:absolute}
 .timer-text{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px}
-.timer-text b{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:44px;letter-spacing:-2px;line-height:1;font-variant-numeric:tabular-nums}
+.timer-text b{font-family:var(--numf);font-weight:600;font-size:46px;letter-spacing:-1.5px;line-height:1;font-variant-numeric:tabular-nums}
 .timer-text span{font-size:12px;color:var(--muted)}
 .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 .step{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;color:var(--faint)}
@@ -281,7 +282,7 @@ nav.bn{position:absolute;left:0;right:0;bottom:0;z-index:10;box-sizing:border-bo
 .bleft{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
 .game-card{display:flex;align-items:center;gap:12px;text-align:left;width:100%;font:inherit;color:var(--fg)}
 .game-ico{width:44px;height:44px;flex-shrink:0;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px}
-.gq{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:40px;letter-spacing:-1px;text-align:center;padding:10px 0}
+.gq{font-family:var(--numf);font-weight:700;font-size:40px;letter-spacing:-.5px;text-align:center;padding:10px 0}
 .ggrid{display:grid;grid-template-columns:repeat(3,72px);gap:10px;justify-content:center}
 .gcell{width:72px;height:72px;border-radius:18px;border:1.5px solid rgba(var(--i),.12);background:rgba(var(--i),.05);transition:background .15s,transform .15s}
 .gcell.on{background:#8C9BFF;border-color:#8C9BFF;transform:scale(1.04)}
@@ -336,7 +337,7 @@ nav.bn{position:absolute;left:0;right:0;bottom:0;z-index:10;box-sizing:border-bo
 .rw-hero .circle{position:absolute;top:-60px;right:-50px;width:180px;height:180px;border-radius:50%;border:1px solid rgba(255,255,255,.35)}
 .rw-hero .spark{position:absolute;right:22px;top:22px;opacity:.6;animation:twinkle 3.2s ease-in-out infinite}
 .rw-hero .he{font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;opacity:.85}
-.rw-bal{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:44px;line-height:1;letter-spacing:-1px}
+.rw-bal{font-family:var(--numf);font-weight:700;font-size:44px;line-height:1;letter-spacing:-1.2px;font-variant-numeric:tabular-nums}
 .rw-bar{height:8px;border-radius:99px;background:rgba(255,255,255,.35);overflow:hidden}
 .rw-bar i{display:block;height:100%;border-radius:99px;background:#fff;animation:fillIn 1.2s cubic-bezier(.2,.8,.2,1) .2s both;transform-origin:left}
 @keyframes fillIn{from{transform:scaleX(0)}}
@@ -369,7 +370,7 @@ nav.bn{position:absolute;left:0;right:0;bottom:0;z-index:10;box-sizing:border-bo
 .pf-edit{width:40px;height:40px;border-radius:50%;border:none;flex-shrink:0;background:rgba(255,255,255,.9);color:#8A3F00;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(120,50,0,.18)}
 .pf-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .pf-stats button{border:none;border-radius:16px;padding:10px 6px;background:rgba(255,255,255,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.6);color:inherit;font:inherit;display:flex;flex-direction:column;align-items:center;gap:1px}
-.pf-stats b{font-family:'Bricolage Grotesque',sans-serif;font-size:20px;line-height:1.1}
+.pf-stats b{font-family:var(--numf);font-weight:700;font-size:20px;line-height:1.1;letter-spacing:-.3px}
 .pf-stats span{font-size:10.5px;font-weight:700;opacity:.75;white-space:nowrap}
 .pf-chips{display:flex;flex-wrap:wrap;gap:8px}
 .pf-chip{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:0 14px 0 12px;border-radius:999px;border:1px solid var(--surface-edge);background:var(--surface);box-shadow:var(--surface-shadow);color:var(--fg);font:inherit;font-weight:700;font-size:13px}
@@ -541,12 +542,12 @@ nav.bn.tab-changed .dock button[aria-current="page"] svg{animation:tabPop .45s c
 .g-score b{color:var(--fg)}
 .g-flash{font-weight:800;animation:pop .35s both}.g-flash.ok{color:var(--mint)}.g-flash.bad{color:var(--coral)}
 .gq.spaced{letter-spacing:8px}
-.g-ans{min-height:56px;border-radius:16px;border:1px solid var(--surface-edge);background:var(--surface);box-shadow:var(--surface-shadow);color:var(--fg);font:inherit;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;display:flex;align-items:center;justify-content:center}
+.g-ans{min-height:56px;border-radius:16px;border:1px solid var(--surface-edge);background:var(--surface);box-shadow:var(--surface-shadow);color:var(--fg);font:inherit;font-family:var(--numf);font-weight:600;font-size:19px;display:flex;align-items:center;justify-content:center}
 .g-ans.erase{color:var(--muted)}
 .g-result{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:6px 0}
 .g-result .g-ico{width:60px;height:60px;border-radius:20px;animation:pop .5s both}
 .sdk{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;width:min(280px,100%);align-self:center;padding:6px;border-radius:18px;background:rgba(var(--i),.06)}
-.sdk-c{aspect-ratio:1;border-radius:10px;border:1px solid var(--surface-edge);background:var(--surface);color:var(--peri);font:inherit;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;display:flex;align-items:center;justify-content:center}
+.sdk-c{aspect-ratio:1;border-radius:10px;border:1px solid var(--surface-edge);background:var(--surface);color:var(--peri);font:inherit;font-family:var(--numf);font-weight:600;font-size:24px;display:flex;align-items:center;justify-content:center}
 .sdk-c.fx{color:var(--fg);background:rgba(var(--i),.05)}
 .sdk-c.sel{border:2px solid #8C9BFF;box-shadow:0 0 0 3px rgba(140,155,255,.25)}
 .sdk-c.bad{border-color:var(--coral);color:var(--coral);animation:shake .45s}
@@ -581,10 +582,13 @@ nav.bn.tab-changed .dock button[aria-current="page"] svg{animation:tabPop .45s c
 .chess-ov{position:absolute;inset:0;z-index:40;background:var(--bg);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:16px 14px 20px;box-sizing:border-box;display:flex;flex-direction:column;gap:10px;animation:screenIn .3s cubic-bezier(.2,.8,.2,1) both}
 :root:not([data-fm-theme="light"]) .chess-ov{background:radial-gradient(90% 30% at 50% 0%,rgba(181,136,99,.16),rgba(181,136,99,0) 70%),#101017}
 .cg-top{display:flex;align-items:center;gap:10px}
-.cg-lvl{display:flex;align-items:center;gap:6px;padding:4px;border-radius:14px;background:rgba(var(--i),.05)}
-.cg-lvl span{font-size:11.5px;font-weight:800;color:var(--muted);padding:0 6px 0 8px;white-space:nowrap}
-.cg-lvl button{flex:1;min-height:36px;border:none;border-radius:11px;background:none;color:var(--muted);font:inherit;font-weight:800;font-size:12.5px}
-.cg-lvl button[aria-pressed="true"]{background:linear-gradient(180deg,#FFC56B,#FF9F43);color:#5A2400;box-shadow:0 3px 10px rgba(255,159,67,.3)}
+.cg-lvl{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:3px;border-radius:13px;background:rgba(var(--i),.07)}
+.cg-lvl button{display:flex;align-items:center;justify-content:center;gap:7px;min-height:36px;border:none;border-radius:10px;background:none;color:var(--muted);font:inherit;font-weight:700;font-size:13px;transition:background-color .2s,color .2s,box-shadow .2s}
+.cg-lvl button[aria-pressed="true"]{background:var(--card);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.08),0 3px 10px rgba(0,0,0,.08)}
+:root:not([data-fm-theme="light"]) .cg-lvl button[aria-pressed="true"]{background:rgba(255,255,255,.14)}
+.lv-bars{display:flex;align-items:flex-end;gap:2px;height:12px}
+.lv-bars i{width:3px;border-radius:2px;background:rgba(var(--i),.2)}
+.lv-bars i.on{background:#FF9F43}
 .cg-player{display:flex;align-items:center;gap:10px;padding:4px;min-width:0}
 .cg-player b{font-size:14px}.cg-player .col>span{font-size:11.5px;font-weight:600;color:var(--muted)}
 .cg-av{width:34px;height:34px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:800;color:#5A2400}
@@ -597,7 +601,7 @@ nav.bn.tab-changed .dock button[aria-current="page"] svg{animation:tabPop .45s c
 .cg-board.busy{filter:saturate(.85)}
 .cq{position:relative;aspect-ratio:1;border:none;padding:0;display:flex;align-items:center;justify-content:center;font:inherit;transition:none}
 .cq.l{background:#EEDDC4}.cq.d{background:#B58863}
-.cq.last.l{background:#F3D98A}.cq.last.d{background:#D7AF5C}
+.cq.last::before{content:'';position:absolute;inset:0;background:rgba(255,197,107,.45)}
 .cq.sel{background:#FFC56B!important;box-shadow:inset 0 0 0 3px #FF9F43}
 .cq.chk{background:radial-gradient(circle,#FF6B5A 0%,#E0503F 45%,rgba(224,80,63,.2) 80%)!important}
 .cq.tgt::after{content:'';position:absolute;width:30%;height:30%;border-radius:50%;background:rgba(28,18,6,.28)}
@@ -634,18 +638,21 @@ nav.bn.tab-changed .dock button[aria-current="page"] svg{animation:tabPop .45s c
 .cg-over-ico{width:62px;height:62px;border-radius:20px;display:flex;align-items:center;justify-content:center;animation:pop .5s both}
 .cg-over-ico.win{background:rgba(255,181,71,.18);color:var(--amber)}.cg-over-ico.draw{background:rgba(140,155,255,.16);color:var(--peri)}
 @media (prefers-reduced-motion: reduce){.chess-ov,.cg-promo,.cg-over,.cg-over-ico,.cg-status.chk{animation:none}}
+.ring-wrap b,.prog-hero .ring-wrap b{font-family:var(--numf);font-weight:700;letter-spacing:-.5px}
+.card.tile .num,.stat-tile .num,.rw-cost b,.pill,.cg-caps em{font-variant-numeric:tabular-nums}
+svg + div[style*="font-weight:800"]{font-family:var(--numf);font-weight:700!important;letter-spacing:-.3px}
 .card.fstrip{flex-direction:row;justify-content:space-between;align-items:stretch;gap:0;padding:12px 6px}
 .fs-item{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
 .fs-item+.fs-item{border-left:1px solid rgba(var(--i),.07)}
 .fs-ico{width:26px;height:26px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:2px}
-.fs-item b{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;line-height:1.1;white-space:nowrap}
+.fs-item b{font-family:var(--numf);font-weight:700;font-size:15px;letter-spacing:-.2px;line-height:1.1;white-space:nowrap}
 .fs-item small{font-size:10.5px;font-weight:600;color:var(--muted);white-space:nowrap}
 .dash-head{gap:10px}
 .avatar{width:38px;height:38px;flex-shrink:0;border-radius:50%;border:none;padding:0;background:linear-gradient(145deg,#FFCB74,#F47E3C);color:#1C1206;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(244,126,60,.25)}
 .hello{font-size:12.5px;font-weight:600;color:var(--muted);line-height:1.2}
 .hname{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;letter-spacing:-.3px;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .stat-pill{height:40px;display:flex;align-items:center;flex-shrink:0;border-radius:999px;background:var(--surface);border:1px solid var(--surface-edge);box-shadow:var(--surface-shadow)}
-.stat-pill button{height:40px;padding:0 9px;display:flex;align-items:center;gap:5px;border:none;background:none;font-weight:800;font-size:14px;color:var(--fg);font-variant-numeric:tabular-nums}
+.stat-pill button{height:40px;padding:0 9px;display:flex;align-items:center;gap:5px;border:none;background:none;font-family:var(--numf);font-weight:700;font-size:15px;letter-spacing:-.2px;color:var(--fg);font-variant-numeric:tabular-nums}
 .stat-pill button:first-child{color:var(--amber);padding-left:12px}
 .stat-pill button:last-child{padding-right:12px}
 .stat-pill i{width:1px;height:18px;background:rgba(var(--i),.12)}
@@ -2499,7 +2506,7 @@ function chessRender(msg) {
   const chkSq = !st.over && st.check ? CH.kingSq(s.b, s.turn) : -1;
   let board = '';
   for (let i = 0; i < 64; i++) { const r = Math.floor(i / 8), f = i % 8; const p = s.b[i]; const dark = (r + f) % 2 === 1;
-    const cls = ['cq', dark ? 'd' : 'l', G.sel === i ? 'sel' : '', G.last && (G.last.from === i || G.last.to === i) ? 'last' : '', chkSq === i ? 'chk' : '', targets.includes(i) ? (p ? 'tgt cap' : 'tgt') : ''].filter(Boolean).join(' ');
+    const cls = ['cq', dark ? 'd' : 'l', G.sel === i ? 'sel' : '', G.last && G.last.to === i ? 'last' : '', chkSq === i ? 'chk' : '', targets.includes(i) ? (p ? 'tgt cap' : 'tgt') : ''].filter(Boolean).join(' ');
     board += `<button class="${cls}" data-act="cgSq" data-i="${i}" aria-label="${CH.sqName(i)}${p ? ' ' + (p === p.toUpperCase() ? 'white ' : 'black ') + { k: 'king', q: 'queen', r: 'rook', b: 'bishop', n: 'knight', p: 'pawn' }[p.toLowerCase()] : ''}">${p ? `<span class="cp ${p === p.toUpperCase() ? 'w' : 'b'}">${GLYPH[p]}&#xFE0E;</span>` : ''}${f === 0 ? `<i class="cq-r">${8 - r}</i>` : ''}${r === 7 ? `<i class="cq-f">${'abcdefgh'[f]}</i>` : ''}</button>`; }
   const capStr = (arr) => arr.sort((a, c) => CH.VAL[c.toLowerCase()] - CH.VAL[a.toLowerCase()]).map((p) => GLYPH[p] + '&#xFE0E;').join('');
   const mat = G.capB.reduce((a, p) => a + CH.VAL[p.toLowerCase()], 0) - G.capW.reduce((a, p) => a + CH.VAL[p.toLowerCase()], 0);
@@ -2508,7 +2515,7 @@ function chessRender(msg) {
   const long = UI.cgStart && Date.now() - UI.cgStart > CHESS_REMIND_MS;
   ov.innerHTML = `
     <div class="cg-top"><button class="gh-back" data-act="cgExit" aria-label="Back to games">${ICON.back}</button><span class="col grow" style="gap:0"><b class="gh-title">Chess</b><span class="gh-cat">Quest paused · your game is saved</span></span></div>
-    <div class="cg-lvl" role="group" aria-label="AI level"><span>AI level</span>${['easy', 'medium', 'hard'].map((l) => `<button aria-pressed="${G.level === l}" data-act="cgLevel" data-v="${l}">${l[0].toUpperCase() + l.slice(1)}</button>`).join('')}</div>
+    <div class="cg-lvl" role="group" aria-label="AI strength">${['easy', 'medium', 'hard'].map((l, k) => `<button aria-pressed="${G.level === l}" data-act="cgLevel" data-v="${l}"><span class="lv-bars" aria-hidden="true">${[0, 1, 2].map((j) => `<i class="${j <= k ? 'on' : ''}" style="height:${6 + j * 3}px"></i>`).join('')}</span>${l[0].toUpperCase() + l.slice(1)}</button>`).join('')}</div>
     ${long && !G.over ? `<div class="g-nudge">${sv('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/>', 16)}<span class="grow">10 minutes of chess. Save it and get back to your Quest?</span><button class="g-nudge-btn" data-act="cgQuest">Back to Quest</button></div>` : ''}
     <div class="cg-card ${s.turn === 'b' && !G.over ? 'on' : ''}"><span class="cg-av ai"></span><span class="col grow" style="gap:1px;min-width:0"><b>FocusMate AI</b>${G.capW.length ? `<span class="cg-caps">${capStr([...G.capW])}${mat < 0 ? ` <em>+${Math.round(-mat / 100)}</em>` : ''}</span>` : `<span class="cg-sub">${lvl} level</span>`}</span>${G.thinking ? '<span class="cg-chip think"><i></i><i></i><i></i>Thinking</span>' : ''}</div>
     <div class="cg-board-wrap"><div class="cg-board ${G.thinking ? 'busy' : ''}">${board}</div></div>
