@@ -2335,17 +2335,17 @@ function takeBreak() {
   sheet(`<span class="eyebrow" style="color:var(--amber)">Quest paused at ${fmt(leftMs())}</span><h2>Step away <span class="serif">for a moment</span></h2><p class="sub" style="margin:0">Choose how you would like to recharge. Your progress is safe.</p>
     <div class="col" style="gap:10px">
       ${opt('focusGames', '#8C9BFF', '<path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3zM9.5 20h5"/>', 'Focus refresher', 'Two-minute brain exercises to sharpen attention')}
-      ${opt('restBreak', '#6FD6A8', '<path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9zM17 11h1.5a2.5 2.5 0 0 1 0 5H17M8 3v3M12 3v3"/>', 'Rest break', 'A calm 30-second breather, then 5, 10 or 15 minutes away')}
+      ${opt('restBreak', '#6FD6A8', '<path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9zM17 11h1.5a2.5 2.5 0 0 1 0 5H17M8 3v3M12 3v3"/>', 'Rest break', 'A calm 15-second breather, then 5, 10 or 15 minutes away')}
     </div>
     <button class="cta" data-act="resume">Return to my Quest</button>`);
 }
 function restBreak() {
   pauseTimer('On a break');
-  sheet(`<h2>One slow breath, <span class="serif">then your break.</span></h2><p class="sub">30-second breather. Your Quest timer is paused at ${fmt(leftMs())}. Nothing is lost.</p>
-    ${breathCircle()}
+  sheet(`<h2>One slow breath, <span class="serif">then your break.</span></h2><p class="sub">15-second breather. Your Quest timer is paused at ${fmt(leftMs())}. Nothing is lost.</p>
+    ${breathCircle().replace('0:30', '0:15')}
     <div id="breakPick" class="col" hidden><b>How long a break?</b><div class="chips" style="grid-template-columns:repeat(3,minmax(0,1fr))">${CFG.breakMins.map((m) => `<button class="chip" data-act="startBreak" data-m="${m}"><b>${m}</b><span>minutes</span></button>`).join('')}</div></div>
     <button class="ghost" data-act="takeBreak">Back to break options</button>`);
-  breathe(30000, 'bLeft', () => { const p = $('breakPick'); if (p) p.hidden = false; });
+  breathe(15000, 'bLeft', () => { const p = $('breakPick'); if (p) p.hidden = false; });
 }
 function startBreak(m) {
   const end = Date.now() + m * 60000; clearInterval(UI.breakT);
