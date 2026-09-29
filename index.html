@@ -518,6 +518,66 @@ nav.bn.tab-changed .dock button[aria-current="page"] svg{animation:tabPop .45s c
 .chip-ok svg{color:var(--mint)!important}
 .fchip.streak{border-radius:999px;color:var(--amber);padding:9px 14px}
 @media (prefers-reduced-motion: reduce){.stars i,.halo,.orbit,.fchip.g{animation:none!important}}
+.gh{display:flex;align-items:center;gap:10px}
+.gh-back{width:40px;height:40px;border-radius:13px;border:1px solid var(--surface-edge);background:rgba(var(--i),.05);color:var(--fg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gh-title{font-family:'Bricolage Grotesque',sans-serif;font-size:19px;letter-spacing:-.3px;line-height:1.15}
+.gh-cat{font-size:11.5px;font-weight:700;color:var(--muted)}
+.g-pill{font-size:12px;white-space:nowrap}
+.g-cat{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:2px 2px -6px}
+.g-hub{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.g-hub.one{grid-template-columns:1fr}
+.g-tile{display:flex;align-items:center;gap:10px;padding:12px;border-radius:18px;border:1px solid var(--surface-edge);background:var(--surface);box-shadow:var(--surface-shadow);color:var(--fg);font:inherit;text-align:left;min-height:66px}
+.g-tile b{font-size:13.5px;line-height:1.2}
+.g-tile .col>span{font-size:11.5px;font-weight:600;color:var(--muted)}
+.g-ico{width:40px;height:40px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.g-return{align-self:center;display:flex;align-items:center;gap:6px;min-height:44px;padding:0 18px;border-radius:999px;border:none;background:rgba(255,181,71,.14);color:var(--amber);font:inherit;font-weight:800;font-size:14px}
+.g-return svg{width:16px;height:16px}
+.g-nudge{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;background:rgba(255,181,71,.12);border:1px solid rgba(255,181,71,.3);font-size:13px;font-weight:600;color:var(--soft)}
+.g-nudge svg{color:var(--amber);flex-shrink:0}
+.g-nudge-btn{border:none;border-radius:999px;padding:8px 12px;font:inherit;font-weight:800;font-size:12.5px;background:linear-gradient(180deg,#FFC56B,#FF9F43);color:#5A2400;white-space:nowrap}
+.g-prompt{margin:0;text-align:center;font-size:13.5px;font-weight:600;color:var(--muted)}
+.g-prompt.ok{color:var(--mint);font-weight:800}.g-prompt.bad{color:var(--coral)}
+.g-score{display:flex;justify-content:center;gap:12px;font-size:13px;color:var(--muted)}
+.g-score b{color:var(--fg)}
+.g-flash{font-weight:800;animation:pop .35s both}.g-flash.ok{color:var(--mint)}.g-flash.bad{color:var(--coral)}
+.gq.spaced{letter-spacing:8px}
+.g-ans{min-height:56px;border-radius:16px;border:1px solid var(--surface-edge);background:var(--surface);box-shadow:var(--surface-shadow);color:var(--fg);font:inherit;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;display:flex;align-items:center;justify-content:center}
+.g-ans.erase{color:var(--muted)}
+.g-result{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:6px 0}
+.g-result .g-ico{width:60px;height:60px;border-radius:20px;animation:pop .5s both}
+.sdk{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;width:min(280px,100%);align-self:center;padding:6px;border-radius:18px;background:rgba(var(--i),.06)}
+.sdk-c{aspect-ratio:1;border-radius:10px;border:1px solid var(--surface-edge);background:var(--surface);color:var(--peri);font:inherit;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;display:flex;align-items:center;justify-content:center}
+.sdk-c.fx{color:var(--fg);background:rgba(var(--i),.05)}
+.sdk-c.sel{border:2px solid #8C9BFF;box-shadow:0 0 0 3px rgba(140,155,255,.25)}
+.sdk-c.bad{border-color:var(--coral);color:var(--coral);animation:shake .45s}
+.sdk-c.br{margin-right:4px}.sdk-c.bb{margin-bottom:4px}
+.sdk-pad{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.sdk-pad .g-ans{min-height:50px}
+.chess{display:grid;grid-template-columns:repeat(8,1fr);width:min(312px,100%);align-self:center;border-radius:12px;overflow:hidden;box-shadow:0 8px 22px rgba(0,0,0,calc(.3*var(--sh) + .05))}
+.cz{position:relative;aspect-ratio:1;border:none;padding:0;display:flex;align-items:center;justify-content:center;font:inherit}
+.cz.l{background:#F0D9B5}.cz.d{background:#B58863}
+.cz.sel{box-shadow:inset 0 0 0 3px #FF9F43;background:#F6C77E}
+.pc{font-size:27px;line-height:1;font-family:'Segoe UI Symbol','Apple Symbols','Noto Sans Symbols2',serif}
+.pc.w{color:#fff;text-shadow:0 0 1px #000,0 0 1px #000,0 1px 2px rgba(0,0,0,.5)}.pc.b{color:#1C1206}
+.cz-r,.cz-f{position:absolute;font-size:8px;font-weight:800;font-style:normal;color:rgba(28,18,6,.55)}
+.cz-r{top:1px;left:2px}.cz-f{bottom:0;right:2px}
+.xw{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;width:min(250px,100%);align-self:center}
+.xw-c{position:relative}
+.xw-c i{position:absolute;top:2px;left:5px;font-size:10px;font-weight:800;font-style:normal;color:var(--muted);pointer-events:none}
+.xw-c input{width:100%;aspect-ratio:1;box-sizing:border-box;border-radius:10px;border:1.5px solid var(--surface-edge);background:var(--surface);color:var(--fg);text-align:center;font:inherit;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;text-transform:uppercase;padding:0}
+.xw-c input:focus{outline:none;border-color:#FF9F43;box-shadow:0 0 0 3px rgba(255,159,67,.25)}
+.xw-c input.ok{border-color:rgba(111,214,168,.7);color:var(--mint);background:rgba(111,214,168,.1)}
+.xw-c input.bad{border-color:var(--coral);color:var(--coral);animation:shake .45s}
+.xw-clues{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--soft)}
+.xw-clues li{display:flex;gap:8px}
+.xw-clues b{width:20px;height:20px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;background:rgba(255,181,71,.16);color:var(--amber)}
+.med{display:flex;flex-direction:column;align-items:center;gap:16px;padding:6px 0}
+.med-ring{position:relative;width:190px;height:190px;display:flex;align-items:center;justify-content:center}
+.med-ring svg{position:absolute;inset:0}
+.med-core{width:110px;height:110px;border-radius:50%;background:radial-gradient(circle at 40% 35%,rgba(180,240,215,.9),rgba(111,214,168,.35) 60%,rgba(111,214,168,.1));animation:breathe 12s ease-in-out infinite}
+.med-line{margin:0;min-height:44px;text-align:center;font-size:16px;font-weight:600;color:var(--soft);max-width:280px}
+.med-line.in{animation:rise .6s cubic-bezier(.2,.8,.2,1) both}
+@media (prefers-reduced-motion: reduce){.med-core,.med-line.in,.g-result .g-ico{animation:none}}
 .card.fstrip{flex-direction:row;justify-content:space-between;align-items:stretch;gap:0;padding:12px 6px}
 .fs-item{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
 .fs-item+.fs-item{border-left:1px solid rgba(var(--i),.07)}
@@ -2045,27 +2105,70 @@ function toggleMic(btn) {
   try { rec.start(); btn.classList.add('rec'); btn.setAttribute('aria-label', 'Stop listening'); } catch (_) { UI.rec = null; toast("The microphone isn't available right now."); }
 }
 
-/* ---------- Focus games: short refreshers (30–45 s), timer paused, no points ---------- */
+/* ---------- Focus refresher: short brain games and calm, Quest timer paused, no points ----------
+   Exit rules (same in every game):
+   - "‹" (top-left) goes back to the games list. Nothing to lose: games earn no points.
+   - "Return to my Quest" (bottom), tapping outside, or Esc resume the Quest timer.
+   - When a game ends: Play again · Other games · Return to my Quest.
+   - After 5 minutes in the refresher, the list gently suggests going back. */
+const REFRESH_NUDGE_MS = 5 * 60000;
 const GAMES = [
-  ['number', sv('<path d="M5 9h14M5 15h14M10 4L8 20M16 4l-2 16"/>', 20), 'Number Sprint', '45 sec · quick mental arithmetic', 'rgba(255,181,71,.18)'],
-  ['colour', sv('<circle cx="9" cy="9" r="5"/><circle cx="15" cy="15" r="5"/>', 20), 'Colour Match', '30 sec · does the colour match the word?', 'rgba(140,155,255,.2)'],
-  ['memory', sv('<rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/>', 20), 'Memory Grid', '3 rounds · repeat the pattern', 'rgba(111,214,168,.2)'],
+  { id: 'number', cat: 'Quick brain', name: 'Number Sprint', meta: '45 sec', hex: '#FFB547', ink: 'var(--amber)', icon: '<path d="M5 9h14M5 15h14M10 4L8 20M16 4l-2 16"/>' },
+  { id: 'colour', cat: 'Quick brain', name: 'Colour Match', meta: '30 sec', hex: '#8C9BFF', ink: 'var(--peri)', icon: '<circle cx="9" cy="9" r="5"/><circle cx="15" cy="15" r="5"/>' },
+  { id: 'memory', cat: 'Quick brain', name: 'Memory Grid', meta: '3 rounds', hex: '#6FD6A8', ink: 'var(--mint)', icon: '<rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/>' },
+  { id: 'scramble', cat: 'Quick brain', name: 'Word Scramble', meta: '45 sec', hex: '#FF7A9A', ink: 'var(--coral)', icon: '<path d="M4 7h10M4 12h16M4 17h7"/><path d="M17 4l3 3-3 3"/>' },
+  { id: 'sudoku', cat: 'Puzzles', name: 'Mini Sudoku', meta: '4×4 · ~2 min', hex: '#8C9BFF', ink: 'var(--peri)', icon: '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M12 3v18M3 12h18"/>' },
+  { id: 'chess', cat: 'Puzzles', name: 'Chess Puzzle', meta: 'Mate in one', hex: '#5FC8E0', ink: 'var(--peri)', icon: '<path d="M9 21h6M8 18h8l-1-6h-6zM9 12l-1-4 2 1 2-4 2 4 2-1-1 4"/>' },
+  { id: 'crossword', cat: 'Puzzles', name: 'Mini Crossword', meta: '4×4 · ~2 min', hex: '#FFB547', ink: 'var(--amber)', icon: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/>' },
+  { id: 'meditate', cat: 'Calm', name: '1-minute meditation', meta: 'Guided · 60 sec', hex: '#6FD6A8', ink: 'var(--mint)', icon: '<circle cx="12" cy="5" r="2"/><path d="M12 8v5M6 20c1-3 3-4 6-4s5 1 6 4M7 12c2 1 3 1 5 1s3 0 5-1"/>' },
 ];
+const gameById = (id) => GAMES.find((g) => g.id === id);
+const gIcon = (g, size = 20) => `<span class="g-ico" style="background:${hexA(g.hex, .18)};color:${g.ink}">${sv(g.icon, size)}</span>`;
+function gameShell(id, right, body) {
+  const g = gameById(id);
+  return `<div class="gh"><button class="gh-back" data-act="focusGames" aria-label="All games">${ICON.back}</button><span class="col grow" style="gap:0;min-width:0"><b class="gh-title">${g.name}</b><span class="gh-cat">${g.cat}</span></span>${right || ''}</div>
+    ${body}
+    <button class="g-return" data-act="resume">Return to my Quest ${ICON.arrow}</button>`;
+}
 function openGames() {
   if (UI.run && UI.run.running) pauseTimer('Refresher');
-  clearInterval(UI.gameT); UI.game = null;
-  sheet(`<h2>Focus <span class="serif">refresher</span></h2><p class="sub">A two-minute exercise to sharpen your attention. Your Quest is paused, and nothing here affects your points.</p>
-    ${GAMES.map(([id, ico, name, sub2, bg]) => `<button class="brk-opt" data-act="playGame" data-g="${id}"><span class="brk-ico" style="background:${bg};color:${{ number: 'var(--amber)', colour: 'var(--peri)', memory: 'var(--mint)' }[id]}">${ico}</span><span class="grow col" style="gap:1px"><b>${name}</b><span class="small">${sub2}</span></span>${sv('<path d="M9 5l7 7-7 7"/>', 16)}</button>`).join('')}
-    <button class="ghost" data-act="takeBreak">Back to break options</button><button class="link" data-act="resume" style="align-self:center">Return to my Quest</button>`);
+  clearInterval(UI.gameT); UI.game = null; if (!UI.refStart) UI.refStart = Date.now();
+  const long = Date.now() - UI.refStart > REFRESH_NUDGE_MS;
+  const cats = ['Quick brain', 'Puzzles', 'Calm'];
+  sheet(`<div class="gh" style="margin-bottom:-4px"><button class="gh-back" data-act="takeBreak" aria-label="Back to break options">${ICON.back}</button><span class="col grow" style="gap:0"><b class="gh-title">Focus <span class="serif">refresher</span></b><span class="gh-cat">Quest paused${UI.run ? ' at ' + fmt(leftMs()) : ''} · no points here</span></span></div>
+    ${long ? `<div class="g-nudge">${sv('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/>', 16)}<span class="grow">You've refreshed for 5 minutes. Ready to get back?</span><button class="g-nudge-btn" data-act="resume">Back to Quest</button></div>` : ''}
+    ${cats.map((c) => `<span class="g-cat">${c}</span><div class="g-hub ${c === 'Calm' ? 'one' : ''}">${GAMES.filter((g) => g.cat === c).map((g) => `<button class="g-tile" data-act="playGame" data-g="${g.id}">${gIcon(g)}<span class="col" style="gap:1px;min-width:0"><b>${g.name}</b><span>${g.meta}</span></span></button>`).join('')}</div>`).join('')}
+    <button class="g-return" data-act="resume">Return to my Quest ${ICON.arrow}</button>`);
 }
-const COLOURS = [['Red', '#FF5A4E'], ['Blue', '#4C7DFF'], ['Green', '#22B573'], ['Yellow', '#E0A800']];
+function gameResult(id, headline, detail) {
+  clearInterval(UI.gameT); const g = gameById(id); haptic([10, 30, 10]);
+  sheet(`<div class="g-result">${gIcon(g, 26)}<h2>${headline}</h2><p class="sub" style="margin:0">${detail}</p></div>
+    <div class="row" style="gap:8px"><button class="ghost" style="flex:1" data-act="playGame" data-g="${id}">${sv('<path d="M4 12a8 8 0 1 0 2.3-5.7M4 4v4h4"/>', 16)} Play again</button><button class="ghost" style="flex:1" data-act="focusGames">Other games</button></div>
+    <button class="cta" data-act="resume">Return to my Quest ${ICON.arrow}</button>`);
+}
+const countdownPill = () => `<span class="pill p-amber g-pill" id="gTime"></span>`;
+function runClock(G, onEnd) {
+  clearInterval(UI.gameT);
+  const tick = () => { const el = $('gTime'); if (!el || UI.game !== G) { clearInterval(UI.gameT); return; } const l = G.end - Date.now(); el.textContent = Math.max(0, Math.ceil(l / 1000)) + 's'; if (l <= 0) { clearInterval(UI.gameT); onEnd(); } };
+  tick(); UI.gameT = setInterval(tick, 200);
+}
 function startGame(id) {
   clearInterval(UI.gameT);
-  const G = UI.game = { id, score: 0, total: 0, end: Date.now() + (id === 'number' ? 45000 : 30000), round: 0 };
+  const G = UI.game = { id, score: 0, total: 0, round: 0 };
   if (id === 'memory') { G.round = 1; return memoryRound(); }
-  nextItem(); paintGame();
-  UI.gameT = setInterval(() => { const el = $('gTime'); if (!el) { clearInterval(UI.gameT); return; } const l = G.end - Date.now(); el.textContent = Math.max(0, Math.ceil(l / 1000)) + 's'; if (l <= 0) { clearInterval(UI.gameT); gameOver(); } }, 200);
+  if (id === 'sudoku') return sudokuStart();
+  if (id === 'chess') return chessStart();
+  if (id === 'crossword') return xwStart();
+  if (id === 'meditate') return meditateStart();
+  G.end = Date.now() + (id === 'colour' ? 30000 : 45000);
+  nextItem(); paintGame(); runClock(G, () => quickOver(G));
 }
+function quickOver(G) { gameResult(G.id, `${G.score} right`, G.total ? `${G.score} of ${G.total} answered correctly. Brain warmed up.` : 'Give it another go when you like.'); }
+
+/* Number Sprint · Colour Match · Word Scramble */
+const COLOURS = [['Red', '#FF5A4E'], ['Blue', '#4C7DFF'], ['Green', '#22B573'], ['Yellow', '#E0A800']];
+const SCRAMBLE = ['FOCUS', 'LEARN', 'BRAIN', 'STUDY', 'NOTES', 'SKILL', 'QUEST', 'SMART', 'THINK', 'LOGIC', 'GOALS', 'EXAMS', 'IDEAS', 'CLEAR', 'SHARP'];
+const shuffle = (a) => { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
 function nextItem() {
   const G = UI.game;
   if (G.id === 'number') {
@@ -2073,44 +2176,133 @@ function nextItem() {
     let a = 2 + Math.floor(Math.random() * 12), b = 2 + Math.floor(Math.random() * 9); if (op === '−' && b > a) [a, b] = [b, a];
     const ans = op === '+' ? a + b : op === '−' ? a - b : a * b; const opts = new Set([ans]);
     while (opts.size < 4) opts.add(Math.max(0, ans + Math.floor(Math.random() * 11) - 5));
-    G.item = { q: `${a} ${op} ${b}`, ans: String(ans), opts: [...opts].sort(() => Math.random() - .5).map(String) };
+    G.item = { q: `${a} ${op} ${b}`, ans: String(ans), opts: shuffle([...opts]).map(String) };
+  } else if (G.id === 'scramble') {
+    const w = SCRAMBLE[Math.floor(Math.random() * SCRAMBLE.length)]; let mix = w; while (mix === w) mix = shuffle(w.split('')).join('');
+    const opts = new Set([w]); while (opts.size < 4) opts.add(SCRAMBLE[Math.floor(Math.random() * SCRAMBLE.length)]);
+    G.item = { q: mix, ans: w, opts: shuffle([...opts]) };
   } else {
     const w = COLOURS[Math.floor(Math.random() * 4)], c = Math.random() < .5 ? w : COLOURS[Math.floor(Math.random() * 4)];
     G.item = { word: w[0], colour: c[1], ans: w[1] === c[1] ? 'yes' : 'no' };
   }
 }
 function paintGame(flash) {
-  const G = UI.game, it = G.item; const title = GAMES.find((g) => g[0] === G.id)[2];
-  const body = G.id === 'number'
-    ? `<div class="gq">${it.q}</div><div class="grid2">${it.opts.map((o) => `<button class="chip" style="min-height:58px" data-act="gameAnswer" data-v="${o}"><b>${o}</b></button>`).join('')}</div>`
-    : `<p class="sub" style="text-align:center">Does the <b>colour</b> match the word?</p><div class="gq" style="color:${it.colour}">${it.word}</div><div class="grid2"><button class="chip" style="min-height:58px" data-act="gameAnswer" data-v="yes"><b>Yes</b></button><button class="chip" style="min-height:58px" data-act="gameAnswer" data-v="no"><b>No</b></button></div>`;
-  sheet(`<div class="row between"><h2>${title}</h2><span class="pill p-amber" id="gTime">${Math.ceil((G.end - Date.now()) / 1000)}s</span></div>
-    <div class="row small" style="justify-content:center;gap:14px"><span>Score <b style="color:var(--fg)">${G.score}</b></span>${flash ? `<span style="color:var(--${flash === 'ok' ? 'mint' : 'coral'});font-weight:800">${flash === 'ok' ? 'Nice!' : 'Oops'}</span>` : ''}</div>${body}
-    <button class="ghost" data-act="focusGames">Choose another game</button><button class="link" data-act="resume" style="align-self:center">Return to my Quest</button>`);
+  const G = UI.game, it = G.item;
+  const body = G.id === 'colour'
+    ? `<p class="g-prompt">Does the <b>ink colour</b> match the word?</p><div class="gq" style="color:${it.colour}">${it.word}</div><div class="grid2"><button class="g-ans" data-act="gameAnswer" data-v="yes">Yes</button><button class="g-ans" data-act="gameAnswer" data-v="no">No</button></div>`
+    : `<p class="g-prompt">${G.id === 'number' ? 'Solve it fast' : 'Unscramble the word'}</p><div class="gq ${G.id === 'scramble' ? 'spaced' : ''}">${it.q}</div><div class="grid2">${it.opts.map((o) => `<button class="g-ans" data-act="gameAnswer" data-v="${o}">${o}</button>`).join('')}</div>`;
+  sheet(gameShell(G.id, countdownPill(), `<div class="g-score"><span>Score <b>${G.score}</b></span>${flash ? `<span class="g-flash ${flash}">${flash === 'ok' ? 'Nice!' : 'Not quite'}</span>` : ''}</div>${body}`));
 }
-function gameAnswer(v) { const G = UI.game; if (!G) return; G.total++; const ok = v === G.item.ans; if (ok) G.score++; nextItem(); paintGame(ok ? 'ok' : 'bad'); }
+function gameAnswer(v) { const G = UI.game; if (!G || !G.item) return; G.total++; const ok = v === G.item.ans; if (ok) G.score++; haptic(ok ? 8 : [15, 30, 15]); nextItem(); paintGame(ok ? 'ok' : 'bad'); }
+
+/* Memory Grid */
 function memoryRound() {
   const G = UI.game; if (!G || G.id !== 'memory') return; const len = G.round + 2; G.seq = Array.from({ length: len }, () => Math.floor(Math.random() * 9)); G.pos = 0; G.showing = true;
-  const grid = () => `<div class="ggrid">${Array.from({ length: 9 }, (_, i) => `<button class="gcell" data-act="gameCell" data-i="${i}" id="gc${i}" aria-label="Tile ${i + 1}"></button>`).join('')}</div>`;
-  sheet(`<div class="row between"><h2>Memory Grid</h2><span class="pill p-peri">Round ${G.round} of 3</span></div><p class="sub" style="text-align:center" id="gMsg">Watch the pattern…</p>${grid()}<button class="ghost" data-act="focusGames">Choose another game</button><button class="link" data-act="resume" style="align-self:center">Return to my Quest</button>`);
+  const grid = `<div class="ggrid">${Array.from({ length: 9 }, (_, i) => `<button class="gcell" data-act="gameCell" data-i="${i}" id="gc${i}" aria-label="Tile ${i + 1}"></button>`).join('')}</div>`;
+  sheet(gameShell('memory', `<span class="pill p-peri g-pill">Round ${G.round}/3</span>`, `<p class="g-prompt" id="gMsg">Watch the pattern…</p>${grid}`));
   let k = 0; clearInterval(UI.gameT);
   UI.gameT = setInterval(() => {
+    if (UI.game !== G) { clearInterval(UI.gameT); return; }
     document.querySelectorAll('.gcell').forEach((c) => c.classList.remove('on'));
     if (k < G.seq.length * 2) { if (k % 2 === 0) { const c = $('gc' + G.seq[k / 2]); if (c) c.classList.add('on'); } k++; }
     else { clearInterval(UI.gameT); G.showing = false; if ($('gMsg')) $('gMsg').textContent = `Your turn: tap the ${len} tiles in order`; }
   }, 380);
 }
 function gameCell(i) {
-  const G = UI.game; if (!G || G.showing) return; const c = $('gc' + i);
-  if (G.seq[G.pos] === i) { c.classList.add('ok'); setTimeout(() => c.classList.remove('ok'), 250); G.pos++; if (G.pos === G.seq.length) { G.score++; next(); } }
-  else { c.classList.add('bad'); G.showing = true; if ($('gMsg')) $('gMsg').textContent = 'Not quite. Next pattern…'; setTimeout(() => { if (UI.game === G) next(); }, 900); }
-  function next() { if (UI.game !== G) return; G.total++; if (G.round >= 3) return gameOver(); G.round++; setTimeout(() => { if (UI.game === G) memoryRound(); }, 500); }
+  const G = UI.game; if (!G || G.id !== 'memory' || G.showing) return; const c = $('gc' + i);
+  if (G.seq[G.pos] === i) { c.classList.add('ok'); haptic(6); setTimeout(() => c.classList.remove('ok'), 250); G.pos++; if (G.pos === G.seq.length) { G.score++; next(); } }
+  else { c.classList.add('bad'); haptic([15, 30, 15]); G.showing = true; if ($('gMsg')) $('gMsg').textContent = 'Not quite. Next pattern…'; setTimeout(() => { if (UI.game === G) next(); }, 900); }
+  function next() { if (UI.game !== G) return; G.total++; if (G.round >= 3) return gameResult('memory', `${G.score} of 3 patterns`, G.score === 3 ? 'Perfect recall. Your working memory is warm.' : 'Good warm-up for your working memory.'); G.round++; setTimeout(() => { if (UI.game === G) memoryRound(); }, 500); }
 }
-function gameOver() {
-  const G = UI.game; clearInterval(UI.gameT); const title = GAMES.find((g) => g[0] === G.id)[2];
-  const line = G.id === 'memory' ? `${G.score} of 3 patterns right` : `${G.score} right${G.total ? ` out of ${G.total}` : ''}`;
-  sheet(`<div class="col" style="align-items:center;text-align:center;gap:10px;padding:8px 0"><span class="end-ico" style="background:rgba(140,155,255,.16);color:var(--peri)">${ICON.spark}</span><h2>${title}: <span class="serif">${line}</span></h2><p class="sub">Brain warmed up. Ready to get back to it?</p></div>
-    <button class="cta" data-act="resume">I'm ready</button><button class="ghost" data-act="focusGames">Play another</button>`);
+
+/* Mini Sudoku 4×4: fill 1–4 so every row, column and 2×2 box has each number once */
+const SUDOKU = [
+  { sol: '1234341221434321', give: '1..4.4...1..4..1' },
+  { sol: '2143341212344321', give: '.1..3..2...4.3..' },
+  { sol: '4321124321343412', give: '..2.1....1.4.4..' },
+];
+function sudokuStart() {
+  const G = UI.game; const P = SUDOKU[Math.floor(Math.random() * SUDOKU.length)];
+  G.sol = P.sol; G.cells = P.give.split('').map((c) => (c === '.' ? '' : c)); G.fixed = P.give.split('').map((c) => c !== '.'); G.sel = G.fixed.indexOf(false); G.start = Date.now(); G.bad = [];
+  sudokuPaint();
+}
+function sudokuPaint(msg) {
+  const G = UI.game;
+  const grid = `<div class="sdk">${G.cells.map((v, i) => `<button class="sdk-c ${G.fixed[i] ? 'fx' : ''} ${G.sel === i ? 'sel' : ''} ${G.bad.includes(i) ? 'bad' : ''} ${i % 4 === 1 ? 'br' : ''} ${Math.floor(i / 4) === 1 ? 'bb' : ''}" data-act="sdkCell" data-i="${i}" ${G.fixed[i] ? 'disabled' : ''} aria-label="Row ${Math.floor(i / 4) + 1} column ${(i % 4) + 1}${v ? ', ' + v : ', empty'}">${v}</button>`).join('')}</div>`;
+  const pad = `<div class="sdk-pad">${['1', '2', '3', '4'].map((n) => `<button class="g-ans" data-act="sdkNum" data-v="${n}">${n}</button>`).join('')}<button class="g-ans erase" data-act="sdkNum" data-v="" aria-label="Erase">${sv('<path d="M20 20H9L4 15l9-9 7 7-5 5M13 6l5 5"/>', 18)}</button></div>`;
+  sheet(gameShell('sudoku', `<span class="pill p-peri g-pill">${G.cells.filter(Boolean).length}/16</span>`, `<p class="g-prompt">${msg || 'Each row, column and 2×2 box needs 1, 2, 3 and 4.'}</p>${grid}${pad}`));
+}
+function sdkCell(i) { const G = UI.game; if (!G || G.id !== 'sudoku' || G.fixed[i]) return; G.sel = i; G.bad = []; sudokuPaint(); }
+function sdkNum(v) {
+  const G = UI.game; if (!G || G.id !== 'sudoku' || G.sel < 0) return; G.cells[G.sel] = v; G.bad = []; haptic(6);
+  if (G.cells.every(Boolean)) {
+    // Judge by the rules (any valid grid wins), and highlight squares that clash in a row, column or box.
+    const groups = []; for (let k = 0; k < 4; k++) { groups.push([0, 1, 2, 3].map((j) => k * 4 + j)); groups.push([0, 1, 2, 3].map((j) => j * 4 + k)); }
+    [0, 2, 8, 10].forEach((t) => groups.push([t, t + 1, t + 4, t + 5]));
+    const bad = new Set(); groups.forEach((gr) => gr.forEach((x) => gr.forEach((y) => { if (x !== y && G.cells[x] === G.cells[y]) { if (!G.fixed[x]) bad.add(x); if (!G.fixed[y]) bad.add(y); } })));
+    G.bad = [...bad];
+    if (!G.bad.length) { const s = Math.round((Date.now() - G.start) / 1000); return gameResult('sudoku', 'Solved!', `You cleared the grid in ${Math.floor(s / 60) ? Math.floor(s / 60) + ' min ' : ''}${s % 60} sec.`); }
+    haptic([15, 30, 15]); return sudokuPaint(`${G.bad.length} ${G.bad.length === 1 ? 'square needs' : 'squares need'} another look.`);
+  }
+  const next = G.cells.findIndex((c, i) => !c && !G.fixed[i] && i > G.sel); G.sel = next >= 0 ? next : G.cells.findIndex((c, i) => !c && !G.fixed[i]);
+  sudokuPaint();
+}
+
+/* Chess Puzzle: White to play and checkmate in one move */
+const CHESS = [
+  { title: 'Back-rank mate', pieces: { a1: 'R', g1: 'K', f2: 'P', g2: 'P', h2: 'P', g8: 'k', f7: 'p', g7: 'p', h7: 'p' }, sol: ['a1a8'], why: 'The rook checks along the back rank and the king is boxed in by its own pawns.' },
+  { title: 'Queen and king', pieces: { g6: 'K', a7: 'Q', g8: 'k' }, sol: ['a7g7', 'a7a8'], why: 'The queen checks while your king covers every escape square.' },
+  { title: 'Smothered mate', pieces: { a1: 'K', e5: 'N', h8: 'k', g8: 'r', g7: 'p', h7: 'p' }, sol: ['e5f7'], why: 'The knight checks and the king is smothered by its own pieces.' },
+];
+const PIECE = { K: '♔', Q: '♕', R: '♖', B: '♗', N: '♘', P: '♙', k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟' };
+function chessStart() { const G = UI.game; G.p = CHESS[Math.floor(Math.random() * CHESS.length)]; G.pos = { ...G.p.pieces }; G.sel = null; G.tries = 0; chessPaint(); }
+function chessPaint(msg, tone) {
+  const G = UI.game; const files = 'abcdefgh';
+  let board = '';
+  for (let r = 8; r >= 1; r--) for (let f = 0; f < 8; f++) { const sq = files[f] + r; const pc = G.pos[sq]; const dark = (f + r) % 2 === 0;
+    board += `<button class="cz ${dark ? 'd' : 'l'} ${G.sel === sq ? 'sel' : ''}" data-act="chessSq" data-sq="${sq}" aria-label="${sq}${pc ? ' ' + pc : ''}">${pc ? `<span class="pc ${pc === pc.toUpperCase() ? 'w' : 'b'}">${PIECE[pc]}&#xFE0E;</span>` : ''}${f === 0 ? `<i class="cz-r">${r}</i>` : ''}${r === 1 ? `<i class="cz-f">${files[f]}</i>` : ''}</button>`; }
+  sheet(gameShell('chess', `<span class="pill p-peri g-pill">White to move</span>`, `<p class="g-prompt ${tone || ''}">${msg || `${G.p.title}: find the checkmate in one move. Tap a white piece, then its square.`}</p><div class="chess">${board}</div>`));
+}
+function chessSq(sq) {
+  const G = UI.game; if (!G || G.id !== 'chess') return; const pc = G.pos[sq];
+  if (pc && pc === pc.toUpperCase()) { G.sel = sq; haptic(6); return chessPaint(); }
+  if (!G.sel) return;
+  const mv = G.sel + sq;
+  if (G.p.sol.includes(mv)) { G.pos[sq] = G.pos[G.sel]; delete G.pos[G.sel]; G.sel = null; chessPaint('Checkmate!', 'ok'); setTimeout(() => { if (UI.game === G) gameResult('chess', 'Checkmate!', G.p.why); }, 900); return; }
+  G.tries++; G.sel = null; haptic([15, 30, 15]);
+  if (G.tries >= 2) { const s = G.p.sol[0]; return chessPaint(`Close. The mate is ${s.slice(0, 2)} → ${s.slice(2)}. Try it.`, 'bad'); }
+  chessPaint('Not mate yet. Look for a check the king cannot escape.', 'bad');
+}
+
+/* Mini Crossword: a 4×4 word square (each word reads across and down) */
+const XW = { words: ['CARD', 'AREA', 'REAR', 'DART'], clues: ['Something you play or swipe', 'A space or region', 'The back part', 'Thrown at a board'] };
+function xwStart() { const G = UI.game; G.tries = 0; xwPaint(); }
+function xwPaint(msg, check) {
+  const G = UI.game; const cells = XW.words.join('').split('');
+  const grid = `<div class="xw">${cells.map((ch, i) => `<span class="xw-c">${i % 4 === 0 ? `<i>${i / 4 + 1}</i>` : ''}<input id="xw${i}" maxlength="1" autocomplete="off" autocapitalize="characters" aria-label="Row ${Math.floor(i / 4) + 1} letter ${(i % 4) + 1}" value="${check ? esc(check[i] || '') : ''}" class="${check ? (check[i] === ch ? 'ok' : check[i] ? 'bad' : '') : ''}"></span>`).join('')}</div>`;
+  const clues = `<ol class="xw-clues">${XW.clues.map((c, k) => `<li><b>${k + 1}</b>${c}</li>`).join('')}</ol>`;
+  sheet(gameShell('crossword', `<span class="pill p-amber g-pill">Across = Down</span>`, `<p class="g-prompt">${msg || 'Each clue is the same word across and down.'}</p>${grid}${clues}<div class="row" style="gap:8px"><button class="ghost" style="flex:1" data-act="xwReveal">Reveal</button><button class="cta" style="flex:1;min-height:48px" data-act="xwCheck">Check</button></div>`));
+  const ins = [...document.querySelectorAll('.xw input')];
+  ins.forEach((el, i) => {
+    el.addEventListener('input', () => { el.value = el.value.replace(/[^a-z]/gi, '').toUpperCase(); el.className = ''; if (el.value && ins[i + 1]) ins[i + 1].focus(); });
+    el.addEventListener('keydown', (e) => { if (e.key === 'Backspace' && !el.value && ins[i - 1]) ins[i - 1].focus(); if (e.key === 'Enter') A.xwCheck(); });
+  });
+}
+function xwValues() { return [...document.querySelectorAll('.xw input')].map((el) => el.value.toUpperCase()); }
+
+/* 1-minute meditation */
+const MED_LINES = ['Sit comfortably and soften your shoulders.', 'Breathe in slowly through your nose.', 'Let the breath out a little longer.', 'Notice one sound around you.', 'If a thought pulls you away, let it pass.', 'One more slow breath. You are ready.'];
+function meditateStart() {
+  const G = UI.game; G.end = Date.now() + 60000;
+  sheet(gameShell('meditate', `<span class="pill p-mint g-pill" id="gTime">60s</span>`, `<div class="med"><div class="med-ring"><svg viewBox="0 0 120 120" width="190" height="190"><circle cx="60" cy="60" r="54" fill="none" stroke="rgba(111,214,168,.18)" stroke-width="5"/><circle id="medArc" cx="60" cy="60" r="54" fill="none" stroke="#6FD6A8" stroke-width="5" stroke-linecap="round" transform="rotate(-90 60 60)" stroke-dasharray="339.3" stroke-dashoffset="339.3"/></svg><span class="med-core"></span></div><p class="med-line" id="medLine">${MED_LINES[0]}</p></div>`));
+  let last = -1; clearInterval(UI.gameT);
+  UI.gameT = setInterval(() => {
+    if (UI.game !== G || !$('medArc')) { clearInterval(UI.gameT); return; }
+    const l = G.end - Date.now(); const done = 1 - Math.max(0, l) / 60000;
+    $('medArc').setAttribute('stroke-dashoffset', String(339.3 * (1 - done))); $('gTime').textContent = Math.max(0, Math.ceil(l / 1000)) + 's';
+    const k = Math.min(MED_LINES.length - 1, Math.floor(done * MED_LINES.length)); if (k !== last) { last = k; const el = $('medLine'); el.classList.remove('in'); void el.offsetWidth; el.textContent = MED_LINES[k]; el.classList.add('in'); }
+    if (l <= 0) { clearInterval(UI.gameT); gameResult('meditate', 'One calm minute', 'Your mind has had a reset. Carry this calm into your Quest.'); }
+  }, 250);
 }
 
 /* Recovery tools */
@@ -2226,7 +2418,7 @@ const A = {
   lockSkip() { S.appLock.setupDone = true; S.appLock.apps = []; UI.lockDraft = null; save(); closeSheet(); const q = UI.pendingQuest; UI.pendingQuest = null; if (q) startQuestNow(q.s, q.t); else render(); },
   lockChange() { UI.pendingQuest = null; UI.lockDraft = [...S.appLock.apps]; openLockSetup(S.appLock.perms.usage && S.appLock.perms.overlay ? 2 : 1); },
   pauseToggle() { if (UI.run.running) { pauseTimer(); sheet(`<h2>Focus session <span class="serif">paused</span></h2><p class="sub">Your timer is on hold. Your progress is safe.</p><button class="cta" data-act="resume">Resume session</button><button class="ghost" data-act="takeBreak">Take a break</button><button class="ghost" data-act="resetFocus">Take a Reset Focus</button><button class="ghost warn" data-act="endSession">End session · progress is saved</button>`); } else resumeTimer(); },
-  resume() { clearInterval(UI.breathT); closeSheet(); resumeTimer(); },
+  resume() { clearInterval(UI.breathT); UI.refStart = null; closeSheet(); resumeTimer(); },
   takeBreak() { takeBreak(); },
   restBreak() { restBreak(); },
   startBreak(el) { startBreak(Number(el.dataset.m)); },
@@ -2243,6 +2435,13 @@ const A = {
   playGame(el) { startGame(el.dataset.g); },
   gameAnswer(el) { gameAnswer(el.dataset.v); },
   gameCell(el) { gameCell(Number(el.dataset.i)); },
+  sdkCell(el) { sdkCell(Number(el.dataset.i)); },
+  sdkNum(el) { sdkNum(el.dataset.v); },
+  chessSq(el) { chessSq(el.dataset.sq); },
+  xwCheck() { const G = UI.game; if (!G || G.id !== 'crossword') return; const v = xwValues(); const want = XW.words.join('');
+    if (v.join('') === want) return gameResult('crossword', 'Crossword solved!', 'Every word fits, across and down.');
+    G.tries++; haptic([15, 30, 15]); const wrong = v.filter((c, i) => c && c !== want[i]).length; xwPaint(v.some((c) => !c) && !wrong ? 'Looking good. Fill in the empty squares.' : `${wrong} ${wrong === 1 ? 'letter is' : 'letters are'} off. Try again${G.tries >= 2 ? ', or tap Reveal' : ''}.`, v); },
+  xwReveal() { const G = UI.game; if (!G || G.id !== 'crossword') return; xwPaint('Here is the answer. Each word reads across and down.', XW.words.join('').split('')); },
   stopTutor() { if (UI.tutorCtl) UI.tutorCtl.abort(); },
   toPractice() { if (!UI.run.learned) { toast('Start the AI tutor first. The lesson takes about a minute.'); return; } UI.run.step = 'practice'; S.lastQuest = { id: UI.run.id, subjectId: UI.run.subjectId, topicId: UI.run.topicId, step: 'practice', status: 'in_progress', at: Date.now() }; save(); paintSteps(); $('learnPanel').hidden = true; $('toPracticeBtn').hidden = true; $('quizPanel').hidden = false; loadQuiz(); },
   retryQuiz() { loadQuiz(); },
@@ -2300,7 +2499,7 @@ function sheet(html) {
   $('overlay').innerHTML = `<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`;
 }
 function dismissSheet() {
-  closeSheet(); const R = UI.run;
+  closeSheet(); UI.refStart = null; const R = UI.run;
   if (R && !R.running && !R.timeUp && !R.finished && $('clock')) { resumeTimer(); toast('Welcome back. Your Quest timer is running again.'); }
 }
 function closeSheet() { $('overlay').innerHTML = ''; clearInterval(UI.breathT); clearInterval(UI.gameT); clearInterval(UI.breakT); UI.game = null; if (UI.rec) { try { UI.rec.stop(); } catch (_) {} } }
