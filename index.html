@@ -1795,12 +1795,11 @@ SCREENS.parked = () => {
         <button class="pk-done" data-act="donePark" data-i="${i}" aria-label="Mark ${esc(p.text)} as done">${sv('<path d="M5 12.5l4.5 4.5L19 7.5"/>', 16)}Done</button>
       </div></div>`; };
   return { glow: 'glow-mint', html: `
-  <div class="row">${backBtn('dashboard')}<span class="col grow" style="gap:0;min-width:0"><h1 style="font-size:24px">Parked tasks</h1><span class="small" style="font-weight:700">${open.length} waiting · ${done.length} done</span></span>${themeBtn()}</div>
+  <div class="row">${backBtn('dashboard')}<span class="col grow" style="gap:0;min-width:0"><h1 style="font-size:24px">Parked tasks</h1><span class="small" style="font-weight:700">${open.length ? `${open.length} waiting` : 'All clear'}${done.length ? ` · ${done.length} done` : ''}</span></span>${themeBtn()}</div>
   <div class="pk-hero"><span class="pk-hero-ico">${sv('<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-4.5"/>', 20)}</span>
     <span class="col" style="gap:2px"><b>You stay in control</b><span>FocusMate prepares a plan. You do the task yourself. It never submits forms, pays or handles OTPs.</span></span></div>
   ${open.length ? `<span class="section-label">Waiting · ${open.length}</span>${open.map(card).join('')}` : ''}
-  ${!all.length ? `<div class="card" style="align-items:center;text-align:center;padding:28px 20px;gap:8px"><span class="pk-ico" style="width:52px;height:52px;border-radius:18px;background:rgba(255,181,71,.16);color:var(--amber)">${sv('<path d="M9 4h6l-1 6 3 3H7l3-3-1-6zM12 13v8"/>', 24)}</span><b>Nothing parked</b><span class="small">During a Focus Session, tap Park task to save a stray thought and keep studying.</span></div>` : ''}
-  ${done.length ? `<span class="section-label">Done · ${done.length}</span>${done.map(({ p, i }) => `<div class="pk-donecard"><span class="pk-tick">${sv('<path d="M5 12.5l4.5 4.5L19 7.5"/>', 14)}</span><span class="grow">${esc(p.text)}</span><button class="link" data-act="donePark" data-i="${i}" style="padding:0 4px;min-height:36px">Undo</button></div>`).join('')}` : ''}` };
+  ${!open.length ? `<div class="card" style="align-items:center;text-align:center;padding:28px 20px;gap:8px"><span class="pk-ico" style="width:52px;height:52px;border-radius:18px;background:rgba(255,181,71,.16);color:var(--amber)">${sv('<path d="M9 4h6l-1 6 3 3H7l3-3-1-6zM12 13v8"/>', 24)}</span><b>${all.length ? 'All done. Nice work.' : 'Nothing parked'}</b><span class="small">During a Focus Session, tap Park task to save a stray thought and keep studying.</span></div>` : ''}` };
 };
 
 /* Settings */
