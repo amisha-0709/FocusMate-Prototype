@@ -1,0 +1,33 @@
+{
+  "name": "workspace",
+  "version": "1.0.0",
+  "description": "A clickable prototype of **FocusMate**, an AI-powered study app that turns focused study time into measurable progress.",
+  "main": "auth-server.ts",
+  "scripts": {
+    "build:auth": "esbuild auth-client.js --bundle --minify --platform=browser --format=iife --target=es2020 --outfile=auth-client.bundle.js",
+    "start": "npm run build:auth && tsx auth-server.ts",
+    "test": "python3 -m unittest -v test_server && node test_client_ai.js && npm run build:auth && python3 -m py_compile server.py test_server.py && git diff --check"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amisha-0709/FocusMate-Prototype.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/amisha-0709/FocusMate-Prototype/issues"
+  },
+  "homepage": "https://github.com/amisha-0709/FocusMate-Prototype#readme",
+  "dependencies": {
+    "@clerk/clerk-js": "^6.36.0",
+    "@clerk/express": "^2.1.74",
+    "@clerk/shared": "^4.37.1",
+    "cors": "^2.8.6",
+    "esbuild": "^0.28.2",
+    "express": "^5.2.1",
+    "http-proxy-middleware": "^4.2.0",
+    "tsx": "^4.23.15"
+  }
+}

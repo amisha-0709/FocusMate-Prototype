@@ -270,5 +270,6 @@ class PrototypeHandler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    print("FocusMate running on port 5000", flush=True)
-    ThreadingHTTPServer(("0.0.0.0", 5000), PrototypeHandler).serve_forever()
+    port = int(os.environ.get("FOCUSMATE_INTERNAL_PORT", "5001"))
+    print(f"FocusMate AI service running on internal port {port}", flush=True)
+    ThreadingHTTPServer(("127.0.0.1", port), PrototypeHandler).serve_forever()

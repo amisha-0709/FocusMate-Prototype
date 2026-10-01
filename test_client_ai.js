@@ -1,5 +1,5 @@
-const assert = require("node:assert/strict");
-const fs = require("node:fs");
+import assert from "node:assert/strict";
+import fs from "node:fs";
 
 const html = fs.readFileSync("index.html", "utf8");
 const start = html.indexOf("async function ai(input, opts = {}) {");

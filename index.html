@@ -678,6 +678,7 @@ svg + div[style*="font-weight:800"]{font-family:var(--numf);font-weight:700!impo
 .scr.still>*,nav.bn.still{animation:none}
 .scr.still .subj-body{animation:rise .35s cubic-bezier(.2,.8,.2,1) both}
 .demo-flag{font-size:11px;color:var(--faint);text-align:center}
+#clerk-auth-widget{width:100%;display:flex;justify-content:center}
 </style>
 <script>
 /* Theme: the student's saved choice wins; otherwise follow the page viewer's data-theme, then the device setting.
@@ -700,9 +701,22 @@ svg + div[style*="font-weight:800"]{font-family:var(--numf);font-weight:700!impo
 
 <div class="frame" id="frame"><div id="app"></div><div id="overlay"></div></div>
 
+<!-- FOCUSMATE_CLERK_BOOTSTRAP -->
 <script>
-(() => {
+ (async () => {
 'use strict';
+let authBootstrap = null;
+if (window.__FOCUSMATE_CLERK_CONFIG__) {
+  try {
+    authBootstrap = await window.__fmClerkReady;
+  } catch (error) {
+    console.error('FocusMate authentication could not start:', error);
+    document.getElementById('app').innerHTML = '<section class="scr"><div class="col"><h1>Sign-in is unavailable.</h1><p class="sub">FocusMate could not load its secure sign-in service. Refresh the page or try again later.</p></div></section>';
+    return;
+  }
+}
+const CLERK_ENABLED = !!window.__FOCUSMATE_CLERK_CONFIG__;
+const AUTH_USER = authBootstrap?.user || null;
 /* =========================================================
    FocusMate prototype. Demo only: state lives in this browser.
    Rules follow docs/LOGIC.md: no fake evidence, streak = completed
@@ -868,14 +882,58 @@ const sampleByNotes = (notes) => SAMPLE_SUBJECTS.find((s) => s.notes.trim() === 
 const SUGGESTED = SAMPLE_SUBJECTS.map((s) => s.name);
 
 /* ---------- state ---------- */
-const KEY = 'fm-prototype-v2';
+const LEGACY_KEY = 'fm-prototype-v2';
+const GUEST_KEY = `${LEGACY_KEY}:guest`;
+const KEY = AUTH_USER
+  ? `${LEGACY_KEY}:user:${AUTH_USER.id}`
+  : (CLERK_ENABLED ? GUEST_KEY : LEGACY_KEY);
+const LEGACY_IMPORT_MARKER = `${KEY}:legacy-import-v1`;
+function hasImportableState(storageKey) {
+  try {
+    const value = JSON.parse(localStorage.getItem(storageKey) || 'null');
+    return !!(value && typeof value === 'object' && (
+      value.profile ||
+      (Array.isArray(value.subjects) && value.subjects.length) ||
+      (Array.isArray(value.ledger) && value.ledger.length) ||
+      (Array.isArray(value.quests) && value.quests.length) ||
+      (Array.isArray(value.parked) && value.parked.length)
+    ));
+  } catch (_) { return false; }
+}
+const ACCOUNT_DATA_ALREADY_EXISTS = !!AUTH_USER && (() => {
+  try { return localStorage.getItem(KEY) !== null; } catch (_) { return false; }
+})();
+let legacyImportSourceKey = null;
+let legacyImportPending = false;
+if (AUTH_USER && !ACCOUNT_DATA_ALREADY_EXISTS) {
+  try {
+    if (!localStorage.getItem(LEGACY_IMPORT_MARKER)) {
+      legacyImportSourceKey = [LEGACY_KEY, GUEST_KEY].find(hasImportableState) || null;
+      legacyImportPending = !!legacyImportSourceKey;
+    }
+  } catch (_) {}
+}
 const fresh = () => ({ v: 1, user: null, profile: null, subjects: [], ledger: [], streak: { current: 0, longest: 0, last: null, days: [] }, redemptions: [], parked: [], quests: [], lastQuest: null, ad: { last: null, lastSurface: null, shown: 0 }, sponsorEvents: [], appLock: { setupDone: false, apps: [], perms: { usage: false, overlay: false } }, aiConsent: null });
 let S = load();
 S.appLock = S.appLock || { setupDone: false, apps: [], perms: { usage: false, overlay: false } };
 if (S.profile && S.profile.name === 'Justin' && S.user && S.user.email === 'justin@college.edu') { S.profile.name = 'Shashwat'; S.user.email = 'shashwat@college.edu'; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (_) {} }
+if (AUTH_USER) {
+  S.user = Object.assign({}, S.user || {}, AUTH_USER, {
+    name: S.profile?.name || S.user?.name || AUTH_USER.name || '',
+  });
+  save();
+}
 function load() { try { const r = localStorage.getItem(KEY); if (r) return Object.assign(fresh(), JSON.parse(r)); } catch (_) {} return fresh(); }
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (_) {} }
-const UI = { screen: S.user ? (S.profile ? 'dashboard' : 'about') : 'landing', params: {}, slide: 0, draft: null, run: null, busy: false, aiConsentResolve: null };
+const initialPath = window.location.pathname;
+const initialAuthMode = CLERK_ENABLED && /^\/sign-in(?:\/|$)/.test(initialPath)
+  ? 'login'
+  : (CLERK_ENABLED && /^\/sign-up(?:\/|$)/.test(initialPath) ? 'signup' : null);
+const UI = {
+  screen: initialAuthMode ? 'signin' : (S.user ? (S.profile ? 'dashboard' : 'about') : 'landing'),
+  params: initialAuthMode ? { mode: initialAuthMode } : {},
+  slide: 0, draft: null, run: null, busy: false, aiConsentResolve: null,
+};
 
 /* ---------- mastery + progress (server logic in the real app) ---------- */
 function topicScore(t) {
@@ -1115,6 +1173,14 @@ function go(screen, params = {}) {
   if (UI.screen === 'focus' && screen !== 'focus' && UI.run) pauseTimer();
   if (UI.tutorCtl) UI.tutorCtl.abort();
   try { if ('speechSynthesis' in window) speechSynthesis.cancel(); } catch (_) {}
+  if (CLERK_ENABLED) {
+    const authPath = screen === 'signin'
+      ? (params.mode === 'login' ? '/sign-in' : '/sign-up')
+      : (screen === 'landing' ? '/' : null);
+    if (authPath && window.location.pathname !== authPath) {
+      window.history.pushState({}, '', authPath);
+    }
+  }
   UI.screen = screen; UI.params = params; closeSheet(); render();
 }
 function render(opts = {}) {
@@ -1123,6 +1189,9 @@ function render(opts = {}) {
   const out = fn(UI.params);
   const top = opts.still ? ($('scr') ? $('scr').scrollTop : 0) : 0;
   // "still" = same screen updated in place (a tap, a toggle): no entrance animations.
+  if (CLERK_ENABLED && window.__fmUnmountAuthWidget) {
+    window.__fmUnmountAuthWidget($('clerk-auth-widget'));
+  }
   $('app').innerHTML = `<section class="scr ${out.glow || 'glow-amber'} ${tab ? 'nav-pad' : ''} ${opts.still ? 'still' : ''}" id="scr">${out.html}</section>${tab ? nav(tab) : ''}`;
   if (tab) { if (UI.navShown) document.querySelector('nav.bn').classList.add('still'); UI.navShown = true; }
   const scr = $('scr'); scr.scrollTop = top;
@@ -1158,10 +1227,18 @@ SCREENS.landing = () => ({ html: `
   <div class="grow"></div>
   <button class="cta" data-go="signin">Start studying ${ICON.arrow}</button>
   <button class="ghost" data-act="loadSample">Explore with sample data</button>
-  <p class="demo-flag">Prototype · data stays in this browser · partners are simulated</p>` });
+  <p class="demo-flag">${CLERK_ENABLED ? 'Create an account to keep your study records separate on this device. Data is not synced between devices.' : 'Prototype · data stays in this browser · partners are simulated'}</p>` });
 
 SCREENS.signin = (p) => {
   const login = p.mode === 'login';
+  if (CLERK_ENABLED) {
+    return { html: `
+    <div class="row between">${backBtn('landing')}${themeBtn()}</div>
+    <div class="col" style="margin-top:6px"><h1 style="font-size:34px">${login ? 'Welcome <em>back.</em>' : 'Create your <em>FocusMate account</em>'}</h1><p class="sub">${login ? 'Pick up your Study Quest where you left off.' : 'Study smarter. Make every focused session count.'}</p></div>
+    <div id="clerk-auth-widget"></div>
+    <p class="demo-flag">Your study records stay in this browser and are separated by account. They are not synced across devices. Gemini requests still require your separate consent.</p>`,
+    after: () => window.__fmMountAuthWidget?.($('clerk-auth-widget'), login ? 'login' : 'signup') };
+  }
   return { html: `
   <div class="row between">${backBtn('landing')}${themeBtn()}</div>
   <div class="col" style="margin-top:6px"><h1 style="font-size:34px">${login ? 'Welcome <em>back.</em>' : 'Create your <em>FocusMate account</em>'}</h1><p class="sub">${login ? 'Pick up your Study Quest where you left off.' : 'Study smarter. Make every focused session count.'}</p></div>
@@ -1190,14 +1267,14 @@ function signIn(email) {
 
 /* About you: 4 questions, asked once */
 SCREENS.about = () => {
-  const d = UI.draft && UI.draft.kind === 'about' ? UI.draft : (UI.draft = { kind: 'about', step: 1, editing: !!S.profile, email: S.user?.email || '', name: S.profile?.name || '', level: S.profile?.level || '', course: S.profile?.course || '', wd: S.profile?.wd ?? 2, we: S.profile?.we ?? 4, blockers: S.profile?.blockers || [] });
+  const d = UI.draft && UI.draft.kind === 'about' ? UI.draft : (UI.draft = { kind: 'about', step: 1, editing: !!S.profile, email: CLERK_ENABLED ? (S.profile?.contactEmail || '') : (S.user?.email || ''), name: S.profile?.name || '', level: S.profile?.level || '', course: S.profile?.course || '', wd: S.profile?.wd ?? 2, we: S.profile?.we ?? 4, blockers: S.profile?.blockers || [] });
   const Q = { 1: ['What are you currently studying?', ''], 2: ['What are you studying?', 'For example: B.Tech — AI & Data Science. You will add your subjects next.'], 3: ['How much time can you realistically study?', 'Across all your subjects. We split it between them for you.'], 4: ['What usually gets in the way?', 'This helps us suggest the right reset later. Pick all that apply.'] }[d.step];
   const levels = ['Undergraduate', 'Postgraduate', 'Professional course', 'Other'];
   const blockers = ['Phone / social media', 'Messages', 'Other tasks', 'Noise', 'Lack of motivation', "Don't know what to study", 'Difficult concepts', 'Losing focus'];
   const ok = d.step === 1 ? d.level : d.step === 2 ? d.course.trim() && d.name.trim() : true;
   let body = '';
   if (d.step === 1) body = `<div class="col">${levels.map((l) => `<button class="opt ${d.level === l ? 'pop' : ''}" aria-pressed="${d.level === l}" data-act="aboutLevel" data-v="${esc(l)}"><span class="box">${d.level === l ? ICON.check : ''}</span>${l}</button>`).join('')}</div>`;
-  if (d.step === 2) body = `<label class="field"><span class="label">Your first name</span><input class="input" id="aName" value="${esc(d.name)}" maxlength="40"></label><label class="field"><span class="label">Course and specialisation</span><input class="input" id="aCourse" value="${esc(d.course)}" maxlength="80"></label><label class="field"><span class="label">Email <span style="font-weight:500;color:var(--faint)">(optional)</span></span><input class="input" id="aEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@college.edu" value="${esc(d.email)}" maxlength="120"><span class="small">For reminders and account recovery. You can add it later in Profile.</span><span class="error" id="aEmailErr" hidden>${ICON.info}That email doesn't look right.</span></label>`;
+  if (d.step === 2) body = `<label class="field"><span class="label">Your first name</span><input class="input" id="aName" value="${esc(d.name)}" maxlength="40"></label><label class="field"><span class="label">Course and specialisation</span><input class="input" id="aCourse" value="${esc(d.course)}" maxlength="80"></label><label class="field"><span class="label">${CLERK_ENABLED ? 'Contact email' : 'Email'} <span style="font-weight:500;color:var(--faint)">(optional)</span></span><input class="input" id="aEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@college.edu" value="${esc(d.email)}" maxlength="120"><span class="small">${CLERK_ENABLED ? 'For study reminders. Your sign-in email is managed in your FocusMate account.' : 'For reminders and account recovery. You can add it later in Profile.'}</span><span class="error" id="aEmailErr" hidden>${ICON.info}That email doesn't look right.</span></label>`;
   if (d.step === 3) body = `<div class="col" style="gap:10px">${[['wd', 'Weekdays'], ['we', 'Weekends']].map(([k, l]) => `<div class="card" style="flex-direction:row;align-items:center;gap:12px;border-radius:18px"><span class="grow col" style="gap:2px"><b>${l}</b><span class="small">hours a day</span></span><button class="stepper" data-act="aboutHours" data-k="${k}" data-d="-1" aria-label="Less time on ${l}">−</button><span class="num" style="font-size:26px;min-width:34px;text-align:center">${d[k]}</span><button class="stepper" data-act="aboutHours" data-k="${k}" data-d="1" aria-label="More time on ${l}">+</button></div>`).join('')}<div class="row small">${ICON.info}Be realistic, not aspirational. You can change it later.</div></div>`;
   if (d.step === 4) body = `<div class="col">${blockers.map((l) => { const on = d.blockers.includes(l); return `<button class="opt ${on ? 'pop' : ''}" aria-pressed="${on}" data-act="aboutBlocker" data-v="${esc(l)}"><span class="box sq">${on ? ICON.check : ''}</span>${l}</button>`; }).join('')}</div>`;
   return { html: `
@@ -1917,7 +1994,7 @@ SCREENS.settings = () => {
   </div>
    <div class="pf-privacy">${ico('#6FD6A8', '<rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>')}<span class="small" style="color:var(--soft)">Your notes and study records stay in this browser except for content you choose to send to Google after agreeing to the Gemini notice.</span></div>
   <button class="ghost" data-act="logout">${sv('<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/>', 17)} Log out</button>
-  <button class="link" data-act="wipe" style="align-self:center;color:var(--coral);font-size:13px">Delete all prototype data</button>` };
+  <button class="link" data-act="wipe" style="align-self:center;color:var(--coral);font-size:13px">${CLERK_ENABLED ? 'Delete all study data' : 'Delete all prototype data'}</button>` };
 };
 
 /* =========================================================
@@ -2714,7 +2791,10 @@ const A = {
   aboutNext() { const d = UI.draft; const email = (d.email || '').trim();
     if (d.step === 2 && email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { $('aEmailErr').hidden = false; return; }
     if (d.step < 4) { d.step++; render(); return; }
-    S.profile = { name: d.name.trim(), level: d.level, course: d.course.trim(), wd: d.wd, we: d.we, blockers: d.blockers }; S.user = Object.assign(S.user || {}, { email });
+    S.profile = { name: d.name.trim(), level: d.level, course: d.course.trim(), wd: d.wd, we: d.we, blockers: d.blockers, ...(CLERK_ENABLED ? { contactEmail: email } : {}) };
+    S.user = CLERK_ENABLED
+      ? Object.assign(S.user || {}, AUTH_USER || {})
+      : Object.assign(S.user || {}, { email });
     UI.draft = null; save(); go(d.editing ? 'settings' : 'dashboard'); if (d.editing) toast('Your answers are saved.'); },
   editAbout() { UI.draft = null; go('about'); },
   subjSugg(el) { UI.draft.name = el.dataset.v; render({ still: true }); },
@@ -2817,10 +2897,60 @@ const A = {
   dateType(el) { document.querySelectorAll('[data-act="dateType"]').forEach((b) => b.setAttribute('aria-pressed', String(b === el))); UI.dateType && UI.dateType(el.dataset.v); },
   removeSubject(el) { const sub = S.subjects.find((s) => s.id === el.dataset.s); if (!sub) return; sheet(`<h2>Remove <span class="serif">${esc(sub.name)}?</span></h2><p class="sub">Its notes, topics, scores and deadline are deleted from this prototype. Focus Points you already earned stay.</p><button class="cta" style="background:linear-gradient(180deg,#FF9B8E,#FF6A5A)" data-act="removeSubjectYes" data-s="${sub.id}">Remove subject</button><button class="ghost" data-close>Keep it</button>`); },
   removeSubjectYes(el) { const sub = S.subjects.find((s) => s.id === el.dataset.s); S.subjects = S.subjects.filter((s) => s.id !== el.dataset.s); if (S.lastQuest && S.lastQuest.subjectId === el.dataset.s) S.lastQuest = null; save(); closeSheet(); render(); toast(`${sub ? sub.name : 'Subject'} removed.`); },
-  logout() { S.user = null; save(); go('landing'); },
-  wipe() { sheet(`<h2>Delete all <span class="serif">prototype data?</span></h2><p class="sub">Your subjects, notes, scores, points and parked tasks in this browser will be removed.</p><button class="cta" style="background:linear-gradient(180deg,#FF9B8E,#FF6A5A)" data-act="wipeYes">Delete everything</button><button class="ghost" data-close>Cancel</button>`); },
-  wipeYes() { S = fresh(); save(); UI.draft = null; go('landing'); toast('All prototype data deleted.'); },
+  logout() {
+    if (CLERK_ENABLED && AUTH_USER && window.__fmClerk) {
+      window.__fmClerk.signOut({ redirectUrl: '/' });
+      return;
+    }
+    S.user = null; save(); go('landing');
+  },
+  wipe() {
+    const description = AUTH_USER
+      ? 'Your current account’s study records, notes, scores, points and parked tasks saved on this device will be removed. Other accounts and guest data are not affected.'
+      : 'Your subjects, notes, scores, points and parked tasks in this browser will be removed.';
+    sheet(`<h2>Delete all <span class="serif">study data?</span></h2><p class="sub">${description}</p><button class="cta" style="background:linear-gradient(180deg,#FF9B8E,#FF6A5A)" data-act="wipeYes">Delete everything</button><button class="ghost" data-close>Cancel</button>`);
+  },
+  wipeYes() {
+    S = fresh();
+    if (AUTH_USER) S.user = { ...AUTH_USER };
+    save(); UI.draft = null; go(AUTH_USER ? 'about' : 'landing'); toast('Your study data on this device was deleted.');
+  },
+  importLegacyData() {
+    if (!legacyImportPending || !legacyImportSourceKey || !AUTH_USER) return;
+    let imported;
+    try {
+      imported = JSON.parse(localStorage.getItem(legacyImportSourceKey) || 'null');
+      if (!imported || typeof imported !== 'object') throw new Error('No saved data was found.');
+      imported = Object.assign(fresh(), imported);
+      imported.user = Object.assign({}, imported.user || {}, AUTH_USER, {
+        name: imported.profile?.name || imported.user?.name || AUTH_USER.name || '',
+      });
+      localStorage.setItem(KEY, JSON.stringify(imported));
+      localStorage.setItem(LEGACY_IMPORT_MARKER, 'imported');
+    } catch (_) {
+      toast('Import did not finish. Your earlier browser data has been left untouched.');
+      return;
+    }
+    try { localStorage.removeItem(legacyImportSourceKey); } catch (_) {}
+    S = imported;
+    legacyImportPending = false;
+    UI.draft = null;
+    closeSheet();
+    go(S.profile ? 'dashboard' : 'about');
+    toast('Your earlier browser data was imported on this device.');
+  },
+  skipLegacyImport() {
+    if (!legacyImportPending) return;
+    try { localStorage.setItem(LEGACY_IMPORT_MARKER, 'skipped'); } catch (_) {}
+    legacyImportPending = false;
+    closeSheet();
+    toast('Your new account starts fresh. Earlier browser data remains separate.');
+  },
 };
+function showLegacyImportPrompt() {
+  if (!legacyImportPending || !legacyImportSourceKey) return;
+  sheet(`<h2>Import your earlier <span class="serif">FocusMate data?</span></h2><p class="sub">Move the saved profile, subjects, notes and progress from this browser into ${esc(AUTH_USER?.email || 'your account')}? It stays on this device. You can keep it separate and start fresh instead.</p><button class="cta" data-act="importLegacyData">Import my browser data</button><button class="ghost" data-act="skipLegacyImport">Start with a fresh account</button>`);
+}
 const haptic = (p) => { try { if (navigator.vibrate) navigator.vibrate(p); } catch (_) {} };
 document.addEventListener('pointerdown', (e) => { const t = e.target.closest('button,[data-go],[data-act]'); if (t && !t.disabled) haptic(6); }, { passive: true });
 document.addEventListener('click', (e) => {
@@ -2904,6 +3034,25 @@ function sampleState() {
   return st;
 }
 
+if (CLERK_ENABLED) {
+  window.addEventListener('popstate', () => {
+    const path = window.location.pathname;
+    if (/^\/sign-in(?:\/|$)/.test(path)) {
+      UI.screen = 'signin'; UI.params = { mode: 'login' }; render(); return;
+    }
+    if (/^\/sign-up(?:\/|$)/.test(path)) {
+      UI.screen = 'signin'; UI.params = { mode: 'signup' }; render(); return;
+    }
+    if (window.__fmClerk?.isSignedIn && !AUTH_USER) {
+      window.location.assign('/');
+      return;
+    }
+    UI.screen = AUTH_USER ? (S.profile ? 'dashboard' : 'about') : 'landing';
+    UI.params = {};
+    render();
+  });
+}
 render();
+if (legacyImportPending) setTimeout(showLegacyImportPrompt, 150);
 })();
 </script>
