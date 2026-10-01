@@ -56,3 +56,8 @@ timeoutMs = 120000
 [deployment]
 deploymentTarget = "autoscale"
 run = ["npm", "run", "start"]
+
+[userenv]
+
+[userenv.production]
+NODE_ENV = "production"

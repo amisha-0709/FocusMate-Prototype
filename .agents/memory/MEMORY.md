@@ -1,0 +1,1 @@
+- [Production Clerk proxy](production-clerk-proxy.md) — Replit autoscale may leave `NODE_ENV` unset; the production-only Clerk proxy then silently returns 404s.
