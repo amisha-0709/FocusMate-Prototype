@@ -746,8 +746,8 @@ const SPONSORS = [
 ];
 
 /* ---------- sample content (sample student: AI & Data Science) ---------- */
-// Each sample subject carries its own notes; the built-in lessons and questions are used only
-// when AI is off in the viewer. Real subjects get topics, lessons and quizzes from Claude.
+// Each sample subject carries its own notes; built-in lessons and questions remain
+// available when Gemini is unavailable, unconfigured, or not approved by the student.
 const Q = (q, options, answer, why) => ({ q, options, answer, why });
 const SAMPLE_SUBJECTS = [
   { name: 'Statistics', color: 'peri', goal: 'assignment', days: 5, covers: 'topics',
@@ -869,13 +869,13 @@ const SUGGESTED = SAMPLE_SUBJECTS.map((s) => s.name);
 
 /* ---------- state ---------- */
 const KEY = 'fm-prototype-v2';
-const fresh = () => ({ v: 1, user: null, profile: null, subjects: [], ledger: [], streak: { current: 0, longest: 0, last: null, days: [] }, redemptions: [], parked: [], quests: [], lastQuest: null, ad: { last: null, lastSurface: null, shown: 0 }, sponsorEvents: [], appLock: { setupDone: false, apps: [], perms: { usage: false, overlay: false } } });
+const fresh = () => ({ v: 1, user: null, profile: null, subjects: [], ledger: [], streak: { current: 0, longest: 0, last: null, days: [] }, redemptions: [], parked: [], quests: [], lastQuest: null, ad: { last: null, lastSurface: null, shown: 0 }, sponsorEvents: [], appLock: { setupDone: false, apps: [], perms: { usage: false, overlay: false } }, aiConsent: null });
 let S = load();
 S.appLock = S.appLock || { setupDone: false, apps: [], perms: { usage: false, overlay: false } };
 if (S.profile && S.profile.name === 'Justin' && S.user && S.user.email === 'justin@college.edu') { S.profile.name = 'Shashwat'; S.user.email = 'shashwat@college.edu'; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (_) {} }
 function load() { try { const r = localStorage.getItem(KEY); if (r) return Object.assign(fresh(), JSON.parse(r)); } catch (_) {} return fresh(); }
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (_) {} }
-const UI = { screen: S.user ? (S.profile ? 'dashboard' : 'about') : 'landing', params: {}, slide: 0, draft: null, run: null, busy: false };
+const UI = { screen: S.user ? (S.profile ? 'dashboard' : 'about') : 'landing', params: {}, slide: 0, draft: null, run: null, busy: false, aiConsentResolve: null };
 
 /* ---------- mastery + progress (server logic in the real app) ---------- */
 function topicScore(t) {
@@ -976,21 +976,100 @@ function adCard(p, surface) {
     <span class="go">Explore</span></button>`;
 }
 
-/* ---------- Claude (sample capability) ---------- */
-let samplePromise = null; let aiOff = false;
-function getSample() {
-  if (aiOff) return Promise.resolve(null);
-  if (!samplePromise) samplePromise = (window.claude && typeof window.claude.use === 'function') ? window.claude.use('sample').catch(() => null) : Promise.resolve(null);
-  return samplePromise;
+/* ---------- Gemini bridge and data-sharing consent ---------- */
+const AI_CONSENT_VERSION = 'gemini-unpaid-terms-2026-10';
+const GEMINI_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const AI_FALLBACK_CODES = new Set(['consent_declined', 'not_configured', 'unavailable', 'rate_limited', 'provider_error', 'invalid_json', 'request_too_large']);
+const ERR = {
+  consent_declined: 'No content was sent to Google. Built-in sample content is still available.',
+  not_configured: 'Gemini is not configured on this app. Built-in sample content is still available.',
+  unavailable: 'Live Gemini is unavailable in this view. Built-in sample content is still available.',
+  rate_limited: 'Gemini reached its current rate limit. Wait a little and try again.',
+  provider_error: 'Gemini could not respond just now. Try again later or use the built-in samples.',
+  refused: 'Gemini could not answer that request. Try asking differently.',
+  invalid_json: 'Gemini returned a response in the wrong format. Try again or use the built-in sample.',
+  request_too_large: 'This request or its images are too large. Try fewer or smaller files.',
+  invalid_images: 'Use up to four JPG, PNG or WebP images per request, up to 10 MB each.',
+  cancelled: 'The request was stopped.'
+};
+const errText = (e) => ERR[e && e.code] || 'Gemini lost connection. Try again.';
+function showGeminiConsent() {
+  return new Promise((resolve) => {
+    UI.aiConsentResolve = resolve;
+    sheet(`<h2>Before using <span class="serif">Gemini</span></h2>
+      <p class="sub">If you agree, FocusMate will send the prompts and selected study notes, task details, and any attached files or images to Google to generate a reply.</p>
+      <p class="sub">On Google's unpaid Gemini API tier, Google may use prompts and responses to improve Google products. Human reviewers may read and process them. Do not send sensitive, confidential or personal information. Google's availability and rate limits can change.</p>
+      <p class="sub"><b>Google currently requires API use to be for people 18 or older. Unpaid-tier API clients cannot serve users in the EEA, UK or Switzerland.</b> This prototype does not verify age or location; do not use the unpaid tier if those restrictions apply.</p>
+      <label class="field" style="flex-direction:row;align-items:flex-start;gap:10px"><input type="checkbox" id="geminiConsentCheck" style="margin-top:4px"><span class="small">I am 18 or older, this use is permitted where I am, and I agree to send the selected content to Google.</span></label>
+      <button class="cta" id="geminiConsentAgree" data-act="agreeGeminiConsent" disabled>Agree and continue</button>
+      <button class="ghost" data-act="declineGeminiConsent">Decline — use built-in samples</button>`);
+    $('geminiConsentCheck').addEventListener('change', () => { $('geminiConsentAgree').disabled = !$('geminiConsentCheck').checked; });
+  });
 }
-getSample();
-const PERMANENT = ['not_granted', 'sampling_disabled', 'not_declared', 'capability_disabled', 'capability_removed'];
-const ERR = { not_granted: 'AI was not allowed, so the prototype uses built-in sample content.', rate_limited: 'The AI is busy. Wait a moment and try again.', session_expired: 'Sign in to Claude again to use the AI.', refused: 'The AI could not answer that. Try asking differently.', invalid_json: 'The AI answer came back in the wrong shape. Try again.' };
-const errText = (e) => ERR[e && e.code] || 'The AI lost connection. Try again.';
+async function ensureGeminiConsent() {
+  if (S.aiConsent === AI_CONSENT_VERSION) return true;
+  if (S.aiConsent === 'declined') return false;
+  return showGeminiConsent();
+}
+function settleGeminiConsent(agreed) {
+  const resolve = UI.aiConsentResolve;
+  UI.aiConsentResolve = null;
+  S.aiConsent = agreed ? AI_CONSENT_VERSION : 'declined';
+  save();
+  closeSheet();
+  if (resolve) resolve(agreed);
+  if (!agreed) toast('No content was sent to Google. Built-in sample content remains available.');
+}
+function mimeForImage(blob) {
+  const type = String(blob && blob.type || '').toLowerCase();
+  if (GEMINI_IMAGE_TYPES.includes(type)) return type;
+  const name = String(blob && blob.name || '').toLowerCase();
+  if (/\.jpe?g$/.test(name)) return 'image/jpeg';
+  if (/\.png$/.test(name)) return 'image/png';
+  if (/\.webp$/.test(name)) return 'image/webp';
+  return '';
+}
+async function encodeImage(blob) {
+  const mimeType = mimeForImage(blob);
+  if (!mimeType) throw { code: 'invalid_images' };
+  if (blob.size > 10 * 1024 * 1024) throw { code: 'request_too_large' };
+  const bytes = new Uint8Array(await blob.arrayBuffer());
+  let binary = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return { mimeType, data: btoa(binary) };
+}
 async function ai(input, opts = {}) {
-  const sample = await getSample(); if (!sample) throw { code: 'unavailable' };
-  try { return opts.json ? await sample.json(input, opts.o || {}) : await sample(input, opts.o || {}); }
-  catch (e) { if (e && PERMANENT.includes(e.code)) { aiOff = true; toast(ERR.not_granted); } throw e; }
+  if (!(await ensureGeminiConsent())) throw { code: 'consent_declined' };
+  const options = opts.o || {};
+  if (options.images && options.images.length > 4) throw { code: 'invalid_images' };
+  const images = options.images ? await Promise.all(options.images.map(encodeImage)) : [];
+  let response;
+  try {
+    response = await fetch('/api/generate', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      signal: options.signal,
+      body: JSON.stringify({ consent: true, input, json: !!opts.json, images })
+    });
+  } catch (e) {
+    if (options.signal && options.signal.aborted || e && e.name === 'AbortError') throw { code: 'cancelled' };
+    throw { code: 'unavailable' };
+  }
+  let data = {};
+  try { data = await response.json(); } catch (_) {}
+  if (!response.ok) {
+    const code = data.error && data.error.code || (response.status === 404 ? 'unavailable' : 'provider_error');
+    throw { code };
+  }
+  if (opts.json) {
+    if (!data.jsonValid || !Object.prototype.hasOwnProperty.call(data, 'json')) throw { code: 'invalid_json', text: data.text || '' };
+    return data.json;
+  }
+  const text = String(data.text || '');
+  if (!text.trim()) throw { code: 'provider_error' };
+  if (typeof options.onText === 'function') options.onText({ text });
+  return { text };
 }
 const tutorRules = (sub, topic) => `You are FocusMate's AI tutor in a focused study session. Topic: "${topic.name}" (subject: ${sub.name}).
 Rules: teach from the student's notes first; if you add anything not in the notes, end that sentence with "(outside your notes)". Talk like a friendly personal tutor in a chat: warm, clear and short (about 60–80 words unless the student asks for more), one idea at a time, and end with one short question to keep them thinking. Plain text only, no markdown headings or asterisks. Never invent the student's scores.
@@ -1094,7 +1173,7 @@ SCREENS.signin = (p) => {
     <label class="field"><span class="label">Password</span><input class="input" id="pw" type="password" autocomplete="${login ? 'current-password' : 'new-password'}"><span class="error" id="pwErr" hidden>${ICON.info}Use at least 8 characters.</span></label>
     <button class="cta">${login ? 'Log in' : 'Create my account'}</button>
   </form>
-  <p class="demo-flag">Prototype: no real account is created. Your notes, quiz results and parked tasks stay private in this browser.</p>`,
+  <p class="demo-flag">Prototype: no real account is created. Study data is stored in this browser. If you agree to use Gemini, selected prompts, notes, task details and attachments are also sent to Google as explained in the AI notice.</p>`,
   after: () => $('authForm').addEventListener('submit', (e) => {
     e.preventDefault();
     const email = $('email').value.trim(), pw = $('pw').value;
@@ -1398,9 +1477,8 @@ async function handleFiles(sub, list) {
       f.msg = 'Loading the PDF reader…'; paintFiles(sub);
       const { doc, text: out, pages, textPages } = await readPdf(file, (i, n) => { f.pct = Math.round((i / n) * 100); f.msg = `Reading page ${i} of ${n}…`; paintFiles(sub); });
       if (textPages === 0) {
-        const sample = await getSample(); const lim = sample ? await sample.limits().catch(() => null) : null;
-        f.state = 'scanned'; f.canScan = !!(lim && lim.images); f.pages = doc.numPages; UI.pdfDocs = UI.pdfDocs || {}; UI.pdfDocs[f.id] = doc;
-        const pg = `${doc.numPages} ${doc.numPages === 1 ? 'page' : 'pages'}`; f.msg = f.canScan ? `${pg} with no selectable text (looks scanned). The AI can read the first ${SCAN_PAGES} pages as images.` : `${pg} with no selectable text (looks scanned). Paste the text instead, or try a PDF exported from slides.`;
+        f.state = 'scanned'; f.canScan = true; f.pages = doc.numPages; UI.pdfDocs = UI.pdfDocs || {}; UI.pdfDocs[f.id] = doc;
+        const pg = `${doc.numPages} ${doc.numPages === 1 ? 'page' : 'pages'}`; f.msg = `${pg} with no selectable text (looks scanned). Gemini can read the first ${SCAN_PAGES} pages after you agree to share them with Google.`;
         save(); paintFiles(sub); continue;
       }
       appendNotes(sub, file.name, out);
@@ -1417,18 +1495,10 @@ async function handleFiles(sub, list) {
 async function scanPdf(fileId) {
   const sub = S.subjects.find((s) => (s.files || []).some((f) => f.id === fileId)); const f = sub.files.find((x) => x.id === fileId); const doc = UI.pdfDocs && UI.pdfDocs[fileId];
   if (!doc) { toast('Choose the file again to read it.'); return; }
-  const sample = await getSample(); const lim = sample ? await sample.limits().catch(() => null) : null;
-  if (!lim || !lim.images) { toast('Reading images is not available in this view.'); return; }
   f.state = 'reading'; f.pct = 5; f.msg = 'Preparing pages…'; paintFiles(sub);
   try {
-    const n = Math.min(SCAN_PAGES, doc.numPages, lim.images.maxCount); const blobs = [];
-    for (let i = 1; i <= n; i++) {
-      const page = await doc.getPage(i); const vp = page.getViewport({ scale: 1.6 });
-      const c = document.createElement('canvas'); c.width = vp.width; c.height = vp.height;
-      await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
-      blobs.push(await new Promise((r) => c.toBlob(r, 'image/jpeg', 0.85)));
-      f.pct = Math.round((i / n) * 60); f.msg = `Preparing page ${i} of ${n}…`; paintFiles(sub);
-    }
+    const n = Math.min(SCAN_PAGES, doc.numPages);
+    const blobs = await renderPdfPages(doc, n);
     f.msg = 'The AI is reading your pages…'; f.pct = 75; paintFiles(sub);
     const { text } = await ai(`These are ${n} pages of a student's study material for "${sub.name}". Transcribe the study content as clean plain text notes, keeping headings, definitions, formulas and examples. Skip page numbers and decoration. Output only the notes.`, { o: { images: blobs, cache: false } });
     appendNotes(sub, f.name + ' (read by AI)', text);
@@ -1461,7 +1531,7 @@ SCREENS.analysis = (p) => {
   after: () => runAnalysis(sub, labels.length) };
 };
 async function runAnalysis(sub, n) {
-  let step = 0; let aiDone = null; let topics = null; let failed = null;
+  let step = 0; let aiDone = null; let topics = null; let failed = null; let analysisNotice = '';
   const paint = () => { document.querySelectorAll('#aSteps [data-i]').forEach((el) => { const i = +el.dataset.i; el.style.color = i <= step ? 'var(--fg)' : 'var(--faint)'; el.style.fontWeight = i === step ? '700' : '500'; el.querySelector('.st').innerHTML = i < step ? `<span style="color:var(--mint)">${ICON.check}</span>` : i === step ? '<span class="spinner"></span>' : '•'; }); };
   paint();
   const sampleSub = sampleByNotes(sub.notes);
@@ -1472,8 +1542,8 @@ async function runAnalysis(sub, n) {
       if (list.length < 2) throw { code: 'invalid_json' };
       topics = list;
     } catch (e) {
-      if (sampleSub) topics = sampleSub.topics.map((t) => [t[0], t[1], t[2]]);
-      else if (e && e.code === 'unavailable' || PERMANENT.includes(e && e.code)) topics = sub.notes.split(/\n+/).map((l) => l.trim()).filter((l) => l.length > 20 && !/^(===|\[Page)/.test(l)).slice(0, 5).map((l) => [l.split(/[.:(]/)[0].slice(0, 50), 10, 'From your notes (AI off: split by line)']);
+      if (sampleSub) { topics = sampleSub.topics.map((t) => [t[0], t[1], t[2]]); analysisNotice = `Using built-in sample topics. ${errText(e)}`; }
+      else if (AI_FALLBACK_CODES.has(e && e.code)) { topics = sub.notes.split(/\n+/).map((l) => l.trim()).filter((l) => l.length > 20 && !/^(===|\[Page)/.test(l)).slice(0, 5).map((l) => [l.split(/[.:(]/)[0].slice(0, 50), 10, 'From your notes (built-in fallback)']); analysisNotice = `Topics were split from your saved notes without Gemini. ${errText(e)}`; }
       else failed = e;
       if (topics && topics.length < 2 && !failed) failed = { code: 'too_short' };
     }
@@ -1491,7 +1561,7 @@ async function runAnalysis(sub, n) {
   sub.topics = topics.map(([name, minutes, summary]) => ({ id: uid(), name, minutes, summary, evidence: [] }));
   sub.analysedAt = Date.now(); save();
   $('aHead').innerHTML = 'Here’s what <em>we found</em>';
-  $('aOut').innerHTML = `<div class="card"><span class="eyebrow">${sub.topics.length} topics · about ${sub.topics.reduce((a, t) => a + t.minutes, 0)} min</span><ul class="list">${sub.topics.map((t) => `<li><span class="grow col" style="gap:1px"><b style="font-size:14px">${esc(t.name)}</b><span class="small">${esc(t.summary)}</span></span><span class="small" style="font-weight:700">${t.minutes} min</span></li>`).join('')}</ul></div><button class="cta" data-go="plan" data-s="${sub.id}">See my study plan ${ICON.arrow}</button>`;
+  $('aOut').innerHTML = `${analysisNotice ? `<p class="small">${esc(analysisNotice)}</p>` : ''}<div class="card"><span class="eyebrow">${sub.topics.length} topics · about ${sub.topics.reduce((a, t) => a + t.minutes, 0)} min</span><ul class="list">${sub.topics.map((t) => `<li><span class="grow col" style="gap:1px"><b style="font-size:14px">${esc(t.name)}</b><span class="small">${esc(t.summary)}</span></span><span class="small" style="font-weight:700">${t.minutes} min</span></li>`).join('')}</ul></div><button class="cta" data-go="plan" data-s="${sub.id}">See my study plan ${ICON.arrow}</button>`;
 }
 
 /* Plan */
@@ -1536,7 +1606,7 @@ SCREENS.focus = () => {
     <div class="chip-row" id="tutorActions" ${R.lessonText || (R.chat || []).length ? '' : 'hidden'}>${[['differently', 'Explain differently'], ['example', 'Give an example'], ['test', 'Test me'], ['cards', 'Flashcards'], ['summary', 'Summarise']].map(([k, l]) => `<button class="act" data-act="tutor" data-k="${k}">${l}</button>`).join('')}</div>
     <div id="attachRow" class="row" style="flex-wrap:wrap;gap:6px" hidden></div>
     <form class="composer" id="askForm">
-      <label class="c-btn" title="Attach a PDF, image or text file" aria-label="Attach a file">${ICON.plus}<input type="file" id="attachInput" accept=".pdf,.txt,.md,image/png,image/jpeg,image/webp,image/gif,application/pdf,text/plain" multiple style="position:absolute;opacity:0;width:1px;height:1px"></label>
+      <label class="c-btn" title="Attach a PDF, JPG, PNG, WebP or text file" aria-label="Attach a file">${ICON.plus}<input type="file" id="attachInput" accept=".pdf,.txt,.md,.jpg,.jpeg,.png,.webp,image/png,image/jpeg,image/webp,application/pdf,text/plain" multiple style="position:absolute;opacity:0;width:1px;height:1px"></label>
       <input class="c-input" id="askInput" placeholder="Ask anything" aria-label="Ask the tutor" maxlength="600" autocomplete="off">
       <button type="button" class="c-btn" id="micBtn" data-act="mic" aria-label="Speak your question" ${hasSpeech() ? '' : 'hidden'}>${ICON.mic}</button>
       <button class="c-send" aria-label="Send">${ICON.up}</button>
@@ -1830,6 +1900,13 @@ SCREENS.settings = () => {
   </div>
   <span class="section-label">Appearance</span>
   <div class="pf-themes">${themes.map(([t, l, path]) => `<button class="pf-theme ${pref === t ? 'on' : ''}" aria-pressed="${pref === t}" data-act="setTheme" data-t="${t}">${sv(path, 20)}<span>${l}</span></button>`).join('')}</div>
+   <span class="section-label">AI data sharing</span>
+   <div class="card pf-card">
+     <div class="pf-row static">${ico('#8C9BFF', '<path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4"/><circle cx="12" cy="12" r="4"/>')}<span class="col grow" style="gap:2px"><b>Gemini consent</b><span class="small">${S.aiConsent === AI_CONSENT_VERSION ? 'Agreed · saved in this browser' : S.aiConsent === 'declined' ? 'Declined · built-in samples are used' : 'Not decided'}</span></span></div>
+     <span class="small">When enabled, selected prompts, notes and attachments are sent to Google. On the unpaid tier, Google may use prompts and responses to improve its products.</span>
+     <button class="ghost" data-act="reviewGeminiConsent">Review AI data notice</button>
+     ${S.aiConsent === AI_CONSENT_VERSION ? `<button class="ghost warn" data-act="revokeGeminiConsent">Revoke Gemini consent</button>` : ''}
+   </div>
   <span class="section-label">More</span>
   <div class="card pf-card">
     ${row('subjects', '#8C9BFF', '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>', 'Subjects &amp; deadlines', `${S.subjects.length}`)}
@@ -1838,7 +1915,7 @@ SCREENS.settings = () => {
     <button class="pf-row" data-act="reminder"><span class="pf-ico" style="background:${hexA('#FFB547', .16)};color:#FFB547">${sv('<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/>', 17)}</span><span class="grow">Daily reminder</span><span class="small">${S.reminder && S.reminder.on ? fmtHM(S.reminder.time) : 'Off'}</span><span class="pf-ch">${sv('<path d="M9 5l7 7-7 7"/>', 16)}</span></button>
     ${row('opportunities', '#FF7A9A', '<path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>', 'Opportunities', 'Sponsored')}
   </div>
-  <div class="pf-privacy">${ico('#6FD6A8', '<rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>')}<span class="small" style="color:var(--soft)">Your notes, results, gaps, parked tasks and AI chats are private. We never sell or share them.</span></div>
+   <div class="pf-privacy">${ico('#6FD6A8', '<rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>')}<span class="small" style="color:var(--soft)">Your notes and study records stay in this browser except for content you choose to send to Google after agreeing to the Gemini notice.</span></div>
   <button class="ghost" data-act="logout">${sv('<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/>', 17)} Log out</button>
   <button class="link" data-act="wipe" style="align-self:center;color:var(--coral);font-size:13px">Delete all prototype data</button>` };
 };
@@ -1900,7 +1977,7 @@ async function teach(kind, q, atts = []) {
   try {
     const o = { modelTier: images.length ? 'default' : 'quick', cache: false, signal: ctl.signal, onText: ({ text }) => { renderRich(target, text); } };
     if (images.length) o.images = images;
-    const { text } = await ai([{ role: 'user', content: tutorRules(sub, t) }, ...R.turns.slice(-8)], { o });
+    const { text } = await ai([{ role: 'system', content: tutorRules(sub, t) }, ...R.turns.slice(-8)], { o });
     renderRich(target, text); addAiTools(target, text); R.learned = true; if ($('toPracticeBtn')) $('toPracticeBtn').hidden = false;
     // Keep later calls small: remember the file by name and a short excerpt, not its whole text.
     if (atts.length) R.turns[R.turns.length - 1] = { role: 'user', content: q + atts.map((a) => `\n[Attached: ${a.name}${a.text ? ' — excerpt: ' + a.text.slice(0, 1200) : ''}]`).join('') };
@@ -1915,15 +1992,15 @@ async function teach(kind, q, atts = []) {
       return;
     }
     const fb = LESSON[t.name];
-    if (kind === 'lesson') { R.lessonText = fb ? fb + '\n\n(Built-in sample lesson: AI is off in this view.)' : `Key points from your notes on ${t.name}:\n\n` + sub.notes.split(/\n+/).filter((l) => l.toLowerCase().includes(t.name.split(' ')[0].toLowerCase())).slice(0, 4).map((l) => '- ' + l.trim()).join('\n') + '\n\n(AI is off, so this is a summary of your notes.)'; renderRich(target, R.lessonText); addAiTools(target, R.lessonText); R.learned = true; if ($('toPracticeBtn')) $('toPracticeBtn').hidden = false; }
-    else if (e && e.code === 'unavailable' && kind === 'ask' && !atts.length) {
-      // No live AI here (e.g. the public demo link): answer from the built-in sample lesson so the Quest can continue.
+    if (kind === 'lesson') { R.lessonText = fb ? fb + `\n\n(Built-in sample lesson. ${errText(e)})` : `Key points from your notes on ${t.name}:\n\n` + sub.notes.split(/\n+/).filter((l) => l.toLowerCase().includes(t.name.split(' ')[0].toLowerCase())).slice(0, 4).map((l) => '- ' + l.trim()).join('\n') + `\n\n(Built-in notes summary. ${errText(e)})`; renderRich(target, R.lessonText); addAiTools(target, R.lessonText); R.learned = true; if ($('toPracticeBtn')) $('toPracticeBtn').hidden = false; }
+    else if (kind === 'ask' && !atts.length && AI_FALLBACK_CODES.has(e && e.code)) {
+      // When no file needs to be interpreted, the built-in sample lesson can keep the Quest moving.
       const body = fb ? fb.split(/\n\n+/).slice(0, 2).join('\n\n') : `Here are the key ideas of ${t.name} from your notes. Read them, then try the practice questions.`;
-      const text = body + '\n\n(Sample answer: live AI replies work when this is opened on claude.ai.)';
+      const text = body + `\n\n(Built-in sample answer. ${errText(e)})`;
       renderRich(target, text); addAiTools(target, text); R.learned = true; if ($('toPracticeBtn')) $('toPracticeBtn').hidden = false;
       R.chat = R.chat || []; R.chat.push({ role: 'user', content: shown, files: [] }); R.chat.push({ role: 'ai', content: text });
     }
-    else target.textContent = e && e.code === 'unavailable' ? 'The AI tutor needs Claude access. Open this prototype on claude.ai while signed in.' : e && e.code === 'images_unavailable' ? 'Reading images is not available in this view. Try a PDF with text, or type your question.' : e && e.code === 'image_rejected' ? "That image couldn't be read. Try a JPG or PNG under 20 MB." : errText(e);
+    else target.textContent = errText(e);
   } finally { setBusy(false); stopRow.remove(); if (UI.tutorCtl === ctl) UI.tutorCtl = null; }
 }
 const stepIcon = (done) => `<span class="step-ico ${done ? 'done' : ''}">${done ? ICON.check : ''}</span>`;
@@ -1981,7 +2058,6 @@ function paintAttach() {
   row.hidden = !list.length;
   row.innerHTML = list.map((a) => `<span class="pill ${a.state === 'error' ? 'p-coral' : 'p-na'}" style="gap:6px;max-width:100%">${a.kind === 'image' && a.url ? `<img src="${a.url}" alt="" style="width:22px;height:22px;border-radius:6px;object-fit:cover">` : a.kind === 'image' ? '🖼' : '📄'}<span style="max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(a.name)}</span><span style="font-weight:600">${a.state === 'reading' ? '· reading…' : a.state === 'error' ? '· ' + esc(a.msg) : a.note ? '· ' + esc(a.note) : ''}</span><button type="button" data-act="dropAttach" data-id="${a.id}" aria-label="Remove ${esc(a.name)}" style="border:none;background:none;padding:0 2px;font-size:16px;line-height:1;color:inherit">×</button></span>`).join('');
 }
-async function imageLimits() { const sample = await getSample(); return sample ? await sample.limits().catch(() => null) : null; }
 async function addAttachment(file) {
   UI.attach = UI.attach || [];
   if (UI.attach.length >= CHAT_MAX_FILES) { toast(`You can attach up to ${CHAT_MAX_FILES} files per message.`); return; }
@@ -1994,19 +2070,15 @@ async function addAttachment(file) {
     if (file.size > MAX_MB * 1024 * 1024) return fail(`over ${MAX_MB} MB`);
     if (isImg) {
       a.kind = 'image';
-      const lim = await imageLimits();
-      if (!lim || !lim.images) return fail("images aren't available in this view");
-      if (lim.images.mediaTypes && !lim.images.mediaTypes.includes(file.type)) return fail('use JPG, PNG, WebP or GIF');
-      if (file.size > lim.images.maxInputBytes) return fail('image too large');
+      if (!mimeForImage(file)) return fail('use a JPG, PNG or WebP image');
+      if (file.size > 10 * 1024 * 1024) return fail('image must be 10 MB or smaller');
       a.blobs = [file]; a.url = URL.createObjectURL(file); a.state = 'ready';
     } else if (isPdf) {
       a.kind = 'pdf';
       const { doc, text, pages, textPages } = await readPdf(file);
       if (textPages > 0) { a.text = text; a.state = 'ready'; a.note = `${pages} ${pages === 1 ? 'page' : 'pages'}`; }
       else {
-        const lim = await imageLimits();
-        if (!lim || !lim.images) return fail('scanned PDF: paste the text instead');
-        a.kind = 'scan'; a.blobs = await renderPdfPages(doc, Math.min(3, lim.images.maxCount)); a.state = 'ready'; a.note = `scanned · first ${a.blobs.length} ${a.blobs.length === 1 ? 'page' : 'pages'}`;
+        a.kind = 'scan'; a.blobs = await renderPdfPages(doc, Math.min(3, doc.numPages)); a.state = 'ready'; a.note = `scanned · first ${a.blobs.length} ${a.blobs.length === 1 ? 'page' : 'pages'}`;
       }
     } else if (isText) {
       a.kind = 'text'; a.text = await file.text(); if (!a.text.trim()) return fail('empty file'); a.state = 'ready';
@@ -2031,15 +2103,16 @@ function addBubble(who, text) { const b = mkBubble(who, text); $('chat').appendC
 async function loadQuiz() {
   const R = UI.run; const sub = S.subjects.find((s) => s.id === R.subjectId); const t = sub.topics.find((x) => x.id === R.topicId);
   $('quizBody').innerHTML = '<span class="thinking"><span class="spinner"></span>Writing questions from your notes…</span>'; $('qbar').innerHTML = '';
-  let quiz = null;
+  let quiz = null; R.quizNotice = ''; R.usedBank = false;
   try {
     const N = R.qn || 3; const raw = await ai(`Write a ${N}-question multiple-choice quiz that checks understanding of "${t.name}", ${sub.noNotes ? 'using standard university-level material (the student has no notes yet)' : `based ONLY on these notes:\n"""\n${notesFor(sub, t.name, 7000)}\n"""`}\nReply with only a JSON array of ${N} objects: {"q": string, "options": [4 short strings], "answer": index 0-3, "why": one-sentence explanation}.`, { json: true, o: { modelTier: 'default', cache: false } });
     quiz = (Array.isArray(raw) ? raw : []).filter((x) => x && typeof x.q === 'string' && Array.isArray(x.options) && x.options.length === 4 && [0, 1, 2, 3].includes(Number(x.answer))).slice(0, R.qn || 3).map((x) => ({ q: x.q, options: x.options.map(String), answer: Number(x.answer), why: String(x.why || '') }));
     if (quiz.length < 2) throw { code: 'invalid_json' };
   } catch (e) {
     quiz = BANK[t.name] || null;
-    if (!quiz) { $('quizBody').innerHTML = `<p class="sub">${e && e.code === 'unavailable' ? 'The quiz needs the AI to write questions from your notes, and AI is off in this view. The sample subjects (Statistics, Product Management, Data Science, AI Engineering) have built-in questions.' : esc(errText(e))}</p><button class="ghost" data-act="retryQuiz">Try again</button>`; return; }
+    if (!quiz) { $('quizBody').innerHTML = `<p class="sub">${esc(errText(e))} This topic has no built-in sample quiz. Try again later, or choose a sample subject with ready-made questions.</p><button class="ghost" data-act="retryQuiz">Try again</button>`; return; }
     R.usedBank = true;
+    R.quizNotice = `Built-in sample quiz. ${errText(e)}`;
   }
   R.quiz = quiz; R.qi = 0; R.answers = []; save(); renderQuestion();
 }
@@ -2048,7 +2121,7 @@ function renderQuestion() {
   $('qCount').textContent = `Check your understanding · ${i + 1} / ${n}`;
   $('qbar').style.gridTemplateColumns = `repeat(${n},minmax(0,1fr))`;
   $('qbar').innerHTML = R.quiz.map((_, k) => `<i class="${k < i ? (R.answers[k] ? 'ok' : 'no') : k === i ? 'now' : ''}"></i>`).join('');
-  $('quizBody').innerHTML = `<div class="q">${esc(item.q)}</div><div class="col">${item.options.map((o, k) => `<button class="qopt" data-act="answer" data-k="${k}"><span class="tag">${'ABCD'[k]}</span><span>${esc(o)}</span></button>`).join('')}</div><div id="feedback"></div>`;
+  $('quizBody').innerHTML = `${R.quizNotice ? `<p class="small">${esc(R.quizNotice)}</p>` : ''}<div class="q">${esc(item.q)}</div><div class="col">${item.options.map((o, k) => `<button class="qopt" data-act="answer" data-k="${k}"><span class="tag">${'ABCD'[k]}</span><span>${esc(o)}</span></button>`).join('')}</div><div id="feedback"></div>`;
 }
 function answerQ(k) {
   const R = UI.run; const item = R.quiz[R.qi]; if (R.answers[R.qi] !== undefined) return;
@@ -2065,7 +2138,7 @@ async function explainMistake(k) {
   const R = UI.run; const item = R.quiz[R.qi]; const sub = S.subjects.find((s) => s.id === R.subjectId); const t = sub.topics.find((x) => x.id === R.topicId);
   const out = $('mistakeOut'); out.hidden = false; out.innerHTML = '<span class="thinking"><span class="spinner"></span>Thinking…</span>';
   try { const { text } = await ai(`${tutorRules(sub, t)}\n\nThe student answered wrongly.\nQuestion: ${item.q}\nThey chose: ${item.options[k]}\nCorrect: ${item.options[item.answer]}\nIn at most 70 words, explain kindly why their choice is tempting but wrong and give one tip to remember.`, { o: { modelTier: 'quick', onText: ({ text }) => { out.textContent = text; } } }); out.textContent = text; }
-  catch (_) { out.textContent = `The right answer is "${item.options[item.answer]}". ${item.why}`; }
+  catch (e) { out.textContent = `The right answer is "${item.options[item.answer]}". ${item.why} (${errText(e)})`; }
 }
 
 /* Quest completion: the one state transition (idempotent) */
@@ -2613,7 +2686,7 @@ async function prepPark(i) {
   try {
     const raw = await ai(`A student parked this task during a study session: "${p.text}". Help them get it done quickly afterwards. Do not claim to have done anything.\nStudent profile: ${S.profile?.level || ''}, ${S.profile?.course || ''}.\nReply with only JSON: {"summary": one sentence, "steps": [3 short steps], "missing": [info they still need to find, can be empty]}.`, { json: true, o: { modelTier: 'quick', cache: false } });
     p.prep = { summary: String(raw.summary || ''), steps: (raw.steps || []).slice(0, 4).map(String), missing: (raw.missing || []).slice(0, 4).map(String) };
-  } catch (e) { p.prep = { summary: 'Here is a simple plan (AI is off in this view).', steps: ['Collect what you need for it', 'Do it in one short sitting after studying', 'Check it before you send or submit'], missing: [] }; }
+  } catch (e) { p.prep = { summary: `Built-in checklist. ${errText(e)}`, steps: ['Collect what you need for it', 'Do it in one short sitting after studying', 'Check it before you send or submit'], missing: [] }; }
   UI.parkBusy = null; save(); render({ still: true }); haptic([10, 30, 10]); toast('Ready. Your plan is below the task.');
 }
 
@@ -2623,6 +2696,15 @@ async function prepPark(i) {
 const A = {
   theme() { setFmTheme(isDark() ? 'light' : 'dark'); document.querySelectorAll('[data-act="theme"]').forEach((b) => { b.innerHTML = isDark() ? ICON.sun : ICON.moon; }); },
   setTheme(el) { setFmTheme(el.dataset.t === 'system' ? null : el.dataset.t); render(); },
+  agreeGeminiConsent() { if (!$('geminiConsentCheck')?.checked) return; settleGeminiConsent(true); },
+  declineGeminiConsent() { settleGeminiConsent(false); },
+  reviewGeminiConsent() { showGeminiConsent(); },
+  revokeGeminiConsent() {
+    S.aiConsent = 'declined'; save();
+    if (UI.tutorCtl) UI.tutorCtl.abort();
+    render({ still: true });
+    toast('Gemini consent revoked. Future requests will not be sent to Google.');
+  },
   google() { signIn('student@gmail.com'); },
   loadSample() { S = sampleState(); UI.cg = null; save(); UI.draft = null; go('dashboard'); toast('Sample data loaded. Everything is simulated.'); },
   aboutLevel(el) { UI.draft.level = el.dataset.v; render({ still: true }); },
@@ -2759,7 +2841,12 @@ function dismissSheet() {
   closeSheet(); UI.refStart = null; const R = UI.run;
   if (R && !R.running && !R.timeUp && !R.finished && $('clock')) { resumeTimer(); toast('Welcome back. Your Quest timer is running again.'); }
 }
-function closeSheet() { $('overlay').innerHTML = ''; clearInterval(UI.breathT); clearInterval(UI.gameT); clearInterval(UI.breakT); UI.game = null; if (UI.rec) { try { UI.rec.stop(); } catch (_) {} } }
+function closeSheet() {
+  $('overlay').innerHTML = '';
+  if (UI.aiConsentResolve) { const resolve = UI.aiConsentResolve; UI.aiConsentResolve = null; resolve(false); }
+  clearInterval(UI.breathT); clearInterval(UI.gameT); clearInterval(UI.breakT); UI.game = null;
+  if (UI.rec) { try { UI.rec.stop(); } catch (_) {} }
+}
 let toastT;
 function toast(msg) { document.querySelectorAll('.toast').forEach((t) => t.remove()); const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg; $('frame').appendChild(t); clearTimeout(toastT); toastT = setTimeout(() => t.remove(), 2800); }
 

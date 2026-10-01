@@ -15,8 +15,18 @@ Tap **Explore with sample data** to see a student who has used the app for about
 
 ## Notes
 - Everything is **simulated**: partners (Unstop, Sarvam AI, Great Learning, upGrad), rewards and sample data. No real accounts, offers or payments.
-- Data stays in your own browser (localStorage). Profile → "Delete all prototype data" resets it.
-- The live AI tutor, quiz writing and AI analysis work when the prototype is opened on claude.ai. On this GitHub Pages link they fall back to built-in sample lessons and questions.
+- Prototype records are stored in your browser (localStorage). If you agree to use Gemini, selected prompts, notes and attachments are also sent to Google as described below. Profile → "Delete all prototype data" resets the local records.
+- On the Replit-hosted app, AI tutoring, topic extraction, scanned-page transcription, quizzes and parked-task help use Google's Gemini Developer API. The API key stays in the Python server's `GEMINI_API_KEY` Replit Secret; never paste it into chat or commit it.
+- Before sending anything, FocusMate asks for consent. If you agree, the selected notes, prompts and attachments are sent to Google. On the unpaid API tier, Google may use prompts and responses to improve its products and people may review them; do not send sensitive or confidential information. Consent can be revoked in Profile.
+- Google currently requires API users to be 18+ and limits unpaid-tier API clients by region; paid service is required for users in the EEA, UK and Switzerland. This prototype does not enforce age or location, so do not expose its free-tier AI there. Check Google's current [Gemini API terms](https://ai.google.dev/gemini-api/terms), [billing tiers](https://ai.google.dev/gemini-api/docs/billing), and [rate limits](https://ai.google.dev/gemini-api/docs/rate-limits) before publishing; free-tier access and limits can change.
+- The GitHub Pages demo has no Python Gemini endpoint or server secret, so it continues to use the built-in sample lessons and questions.
 
 ## Making changes
-The whole prototype is one file: `index.html`. Edit it, commit and push, and the live link updates within a minute or two.
+The GitHub Pages demo is the original single-file prototype in `index.html`; edit, commit and push to update that static demo. The Replit-hosted app also uses `server.py` for the Gemini proxy.
+
+## Enable Gemini on Replit
+1. In Replit, open **Tools → Secrets** and add a secret named `GEMINI_API_KEY`.
+2. Put the key value in the Secrets form only. Do not share it in chat, add it to source files, or commit it.
+3. Restart the `Start application` workflow. If the secret is absent or Gemini is unavailable, FocusMate keeps its built-in sample behavior.
+
+The server currently uses Gemini 3 Flash Preview through the Gemini Developer API's free tier. Preview model access and stricter rate limits can change; Google's terms, availability and quotas apply. This is not an unlimited-free service.
