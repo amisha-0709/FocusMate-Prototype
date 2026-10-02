@@ -1,8 +1,8 @@
-# FocusMate — Prototype
+# FocusMate — MVP
 
 A clickable prototype of **FocusMate**, an AI-powered study app that turns focused study time into measurable progress.
 
-**Live demo:** https://shashwatbuild.github.io/FocusMate-Prototype/
+**Live demo:** https://focus-mate-prototype.replit.app/
 
 Tap **Explore with sample data** to see a student who has used the app for about 11 weeks, or **Start studying** to try it as a new student.
 
